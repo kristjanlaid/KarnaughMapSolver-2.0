@@ -207,11 +207,13 @@ public class MainViewController implements Initializable {
     }
 
     private void variableChange() {
+        show3D.setDisable(variablesChoiceBox.getValue() < 5);
+        extraSettings.setDisable(variablesChoiceBox.getValue() < 5 || !show3D.isSelected());
+        focusSlider.setValue(0);
+
         loadTruthTable();
         updateKMap();
         updateCanvas();
-        show3D.setDisable(variablesChoiceBox.getValue() < 5);
-        extraSettings.setDisable(variablesChoiceBox.getValue() < 5 || !show3D.isSelected());
     }
 
     private void loadTruthTable() {
@@ -285,8 +287,6 @@ public class MainViewController implements Initializable {
             context.clearRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
             context.setLineWidth(2);
 
-            drawHeaders(context, rectSize);
-
             for (int z = kMap.sizeZ() - 1; z >= 0; z--) {
 
                 if (show3D.isSelected()) {
@@ -327,6 +327,8 @@ public class MainViewController implements Initializable {
                     }
                 }
             }
+
+            drawHeaders(context, rectSize);
         }
     }
 

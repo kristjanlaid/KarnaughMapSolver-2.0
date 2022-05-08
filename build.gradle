@@ -6,9 +6,6 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
-//apply plugin: 'application'
-//apply plugin: 'com.github.johnrengelman.shadow'
-
 mainClassName = 'project.karnaughmapsolver.Main'
 
 group 'project'

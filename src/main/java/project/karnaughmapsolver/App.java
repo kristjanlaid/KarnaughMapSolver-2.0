@@ -3,6 +3,7 @@ package project.karnaughmapsolver;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -20,11 +21,11 @@ public class App extends Application {
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         primaryStage.setTitle("Karnaugh Map Solver");
+        primaryStage.getIcons().add(new Image(App.class.getResourceAsStream("/images/Kmap_logo.png")));
         primaryStage.setScene(scene);
         primaryStage.maxWidthProperty().bind(primaryStage.widthProperty());
         primaryStage.minWidthProperty().bind(primaryStage.widthProperty());
         primaryStage.setMinHeight(670);
         primaryStage.show();
-
     }
 }
