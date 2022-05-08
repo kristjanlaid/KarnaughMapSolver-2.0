@@ -270,17 +270,6 @@ public class KMap {
             Collections.sort(implicants);
             Collections.reverse(implicants);
 
-            //test
-//            System.out.println("implikandid: ");
-//            for (ValueSet implicant : implicants) {
-//                System.out.println(implicant);
-//            }
-//            System.out.println("termid: ");
-//            for (ValueSet implicant : terms) {
-//                System.out.println(implicant);
-//            }
-//            System.out.println("-------------------------------------------");
-
             ValueSet implicant = implicants.get(0);
             newPrimeImplicants.add(implicant);
 
@@ -293,20 +282,7 @@ public class KMap {
             }
             implicants.removeIf(s -> s.getPrimeImplicants().size() == 0);
 
-            //test
-//            System.out.println("after 1 removed:");
-//            System.out.println("implikandid: ");
-//            for (ValueSet implicant1 : implicants) {
-//                System.out.println(implicant1);
-//            }
-//            System.out.println("termid: ");
-//            for (ValueSet implicant1 : terms) {
-//                System.out.println(implicant1);
-//            }
-//            System.out.println("-------------------------------------------");
-
             // remove what is covered by others
-            //implicants.removeIf(s -> isCovered(implicants, s));
             removeCovered(implicants);
 
             // remove deleted implicants from terms
@@ -314,18 +290,6 @@ public class KMap {
                 term.getPrimeImplicants().removeIf(s -> !implicants.contains(s));
             }
             terms.removeIf(s -> s.getPrimeImplicants().size() == 0);
-
-            //test
-//            System.out.println("after covered by others removed:");
-//            System.out.println("implikandid: ");
-//            for (ValueSet implicant1 : implicants) {
-//                System.out.println(implicant1);
-//            }
-//            System.out.println("termid: ");
-//            for (ValueSet implicant1 : terms) {
-//                System.out.println(implicant1);
-//            }
-//            System.out.println("-------------------------------------------");
 
             //find essential implicants again
             findEssentialImplicants(terms, newPrimeImplicants, implicants, false);
@@ -335,7 +299,6 @@ public class KMap {
                 implicant1.getPrimeImplicants().removeIf(s -> !terms.contains(s));
             }
             implicants.removeIf(s -> s.getPrimeImplicants().size() == 0);
-//            System.out.println("\n*******************************************\n");
         }
 
         return newPrimeImplicants;
