@@ -7,7 +7,7 @@ import java.util.List;
 public class ValueSet implements Comparable<ValueSet> {
     private final char[] binary;
     private char f;
-    private List<ValueSet> primeImplicants = new ArrayList<>();
+    private List<ValueSet> linkedImplicants = new ArrayList<>();
     private boolean added = false;
     private boolean highlighted = false;
     private boolean clicked = false;
@@ -67,12 +67,12 @@ public class ValueSet implements Comparable<ValueSet> {
         this.clicked = clicked;
     }
 
-    public List<ValueSet> getPrimeImplicants() {
-        return primeImplicants;
+    public List<ValueSet> getLinkedImplicants() {
+        return linkedImplicants;
     }
 
-    public void resetPrimeImplicants() {
-        this.primeImplicants = new ArrayList<>();
+    public void resetLinkedImplicants() {
+        this.linkedImplicants = new ArrayList<>();
     }
 
     private void setBitDoNotMatter(int i) {
@@ -80,7 +80,7 @@ public class ValueSet implements Comparable<ValueSet> {
     }
 
     public void addImplicant(ValueSet valueSet) {
-        primeImplicants.add(valueSet);
+        linkedImplicants.add(valueSet);
     }
 
     // methods for TableView value factory
@@ -205,8 +205,8 @@ public class ValueSet implements Comparable<ValueSet> {
 
     @Override
     public int compareTo(ValueSet o) {
-        int a = this.primeImplicants.size();
-        int b = o.primeImplicants.size();
+        int a = this.linkedImplicants.size();
+        int b = o.linkedImplicants.size();
         if (a == b) {
             return Arrays.toString(this.binary).compareTo(Arrays.toString(o.binary));
         }
@@ -218,7 +218,7 @@ public class ValueSet implements Comparable<ValueSet> {
         return "ValueSet{" +
                 "binary=" + Arrays.toString(binary) +
                 ", f=" + f +
-                ", primeImplicants=" + primeImplicants.size() +
+                ", primeImplicants=" + linkedImplicants.size() +
                 '}';
     }
 }

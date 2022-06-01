@@ -42,8 +42,8 @@ public class MainViewController implements Initializable {
     private MenuItem exit;
     @FXML
     private MenuItem about;
-    @FXML
-    private MenuItem help;
+    //@FXML
+    //private MenuItem help;
     @FXML
     private CheckMenuItem showOnlyRelevant;
     @FXML
@@ -198,12 +198,12 @@ public class MainViewController implements Initializable {
                     2022""");
             alert.showAndWait();
         });
-        help.setOnAction(event -> {
-            Alert alert = new Alert(Alert.AlertType.NONE, "", ButtonType.OK);
-            alert.setTitle("Help");
-            alert.setContentText("How to use this application");
-            alert.showAndWait();
-        });
+//        help.setOnAction(event -> {
+//            Alert alert = new Alert(Alert.AlertType.NONE, "", ButtonType.OK);
+//            alert.setTitle("Help");
+//            alert.setContentText("How to use this application");
+//            alert.showAndWait();
+//        });
     }
 
     private void variableChange() {
@@ -369,8 +369,6 @@ public class MainViewController implements Initializable {
         for (int i = 0; i < lim; i++) {
             context.fillText(labels[lim / 4][i], 30 - lim / 4 * 3, 62 + i * rectSize);
         }
-
-
     }
 
     private void drawElement(int x, int y, int xOffset, int yOffset, int rectSize, ValueSet valueSet, GraphicsContext context) {
@@ -423,7 +421,7 @@ public class MainViewController implements Initializable {
     }
 
     private void solve() {
-        kMap.findPrimeImplicants();
+        kMap.findImplicants();
 
         solutionTextSOP.getChildren().clear();
         solutionTextPOS.getChildren().clear();
@@ -454,23 +452,23 @@ public class MainViewController implements Initializable {
         solutionTextSOP.getChildren().add(new Text("\n\nMinimal SOP function: \n"));
         solutionTextPOS.getChildren().add(new Text("\n\nMinimal POS function: \n"));
 
-        for (int i = 0; i < kMap.getEssentialPrimeImplicantsSOP().size(); i++) {
-            ValueSet valueSet = kMap.getEssentialPrimeImplicantsSOP().get(i);
+        for (int i = 0; i < kMap.getMinimalCoverSOP().size(); i++) {
+            ValueSet valueSet = kMap.getMinimalCoverSOP().get(i);
             Text text = new Text(valueSet.getFormulaSOP());
             bindTextWithValueSet(text, valueSet);
-            Text sign = new Text((i == kMap.getEssentialPrimeImplicantsSOP().size() - 1) ? "" : " + ");
+            Text sign = new Text((i == kMap.getMinimalCoverSOP().size() - 1) ? "" : " + ");
             solutionTextSOP.getChildren().addAll(text, sign);
         }
-        if (kMap.getEssentialPrimeImplicantsSOP().size() == 0) {
+        if (kMap.getMinimalCoverSOP().size() == 0) {
             solutionTextSOP.getChildren().add(new Text("0"));
         }
 
-        for (ValueSet valueSet : kMap.getEssentialPrimeImplicantsPOS()) {
+        for (ValueSet valueSet : kMap.getMinimalCoverPOS()) {
             Text text = new Text(valueSet.getFormulaPOS() + "  ");
             bindTextWithValueSet(text, valueSet);
             solutionTextPOS.getChildren().add(text);
         }
-        if (kMap.getEssentialPrimeImplicantsPOS().size() == 0) {
+        if (kMap.getMinimalCoverPOS().size() == 0) {
             solutionTextPOS.getChildren().add(new Text("1"));
         }
 

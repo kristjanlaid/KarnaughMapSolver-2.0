@@ -8,8 +8,8 @@ public class KMap {
     private final ValueSet[][][] values;
     private List<ValueSet> primeImplicantsSOP;
     private List<ValueSet> primeImplicantsPOS;
-    private List<ValueSet> essentialPrimeImplicantsSOP;
-    private List<ValueSet> essentialPrimeImplicantsPOS;
+    private List<ValueSet> minimalCoverSOP;
+    private List<ValueSet> minimalCoverPOS;
 
     public KMap(List<ValueSet> valueSets, int var) {
         values = getMap(var);
@@ -56,12 +56,12 @@ public class KMap {
         return primeImplicantsPOS;
     }
 
-    public List<ValueSet> getEssentialPrimeImplicantsSOP() {
-        return essentialPrimeImplicantsSOP;
+    public List<ValueSet> getMinimalCoverSOP() {
+        return minimalCoverSOP;
     }
 
-    public List<ValueSet> getEssentialPrimeImplicantsPOS() {
-        return essentialPrimeImplicantsPOS;
+    public List<ValueSet> getMinimalCoverPOS() {
+        return minimalCoverPOS;
     }
 
     public ValueSet getValue(int x, int y, int z) {
@@ -92,43 +92,47 @@ public class KMap {
     }
 
 
-    public void findPrimeImplicants() {
+    public void findImplicants() {
         primeImplicantsSOP = new ArrayList<>();
         primeImplicantsPOS = new ArrayList<>();
-        essentialPrimeImplicantsSOP = new ArrayList<>();
-        essentialPrimeImplicantsPOS = new ArrayList<>();
+        minimalCoverSOP = new ArrayList<>();
+        minimalCoverPOS = new ArrayList<>();
         resetValueSets();
 
         List<ValueSet> foundImplicants;
 
-        foundImplicants = findTerms('1', true);
+        // find all minterms
+        foundImplicants = getTerms('1', true);
+        // find SOP prime implicants
         while (!foundImplicants.isEmpty()) {
-            foundImplicants = findImplicants(foundImplicants, true);
+            foundImplicants = findPrimeImplicants(foundImplicants, true);
         }
 
-        foundImplicants = findTerms('0', true);
+        // find all maxterms
+        foundImplicants = getTerms('0', true);
+        // find POS prime implicants
         while (!foundImplicants.isEmpty()) {
-            foundImplicants = findImplicants(foundImplicants, false);
+            foundImplicants = findPrimeImplicants(foundImplicants, false);
         }
 
-        //foundImplicants = findEssentialImplicants(true);
-        foundImplicants = findEssentialImplicants(allValueSets('1'), essentialPrimeImplicantsSOP, primeImplicantsSOP, true);
+        // find minimal SOP function
+        foundImplicants = findEssentialImplicants(findTerms('1'), minimalCoverSOP, primeImplicantsSOP, true);
         foundImplicants = findMinimalCover(findNonEssentialImplicants(true), foundImplicants, true);
-        essentialPrimeImplicantsSOP.addAll(foundImplicants);
+        minimalCoverSOP.addAll(foundImplicants);
 
-        //foundImplicants = findEssentialImplicants(false);
-        foundImplicants = findEssentialImplicants(allValueSets('0'), essentialPrimeImplicantsPOS, primeImplicantsPOS, true);
+        // find minimal POS function
+        foundImplicants = findEssentialImplicants(findTerms('0'), minimalCoverPOS, primeImplicantsPOS, true);
         foundImplicants = findMinimalCover(findNonEssentialImplicants(false), foundImplicants, false);
-        essentialPrimeImplicantsPOS.addAll(foundImplicants);
+        minimalCoverPOS.addAll(foundImplicants);
 
         Collections.sort(primeImplicantsSOP);
         Collections.reverse(primeImplicantsSOP);
         Collections.sort(primeImplicantsPOS);
         Collections.reverse(primeImplicantsPOS);
-        Collections.sort(essentialPrimeImplicantsSOP);
-        Collections.reverse(essentialPrimeImplicantsSOP);
-        Collections.sort(essentialPrimeImplicantsPOS);
-        Collections.reverse(essentialPrimeImplicantsPOS);
+        Collections.sort(minimalCoverSOP);
+        Collections.reverse(minimalCoverSOP);
+        Collections.sort(minimalCoverPOS);
+        Collections.reverse(minimalCoverPOS);
 
         assignColors();
     }
@@ -138,14 +142,14 @@ public class KMap {
         for (int x = 0; x < sizeX(); x++) {
             for (int y = 0; y < sizeY(); y++) {
                 for (int z = 0; z < sizeZ(); z++) {
-                    values[x][y][z].resetPrimeImplicants();
+                    values[x][y][z].resetLinkedImplicants();
                 }
             }
         }
     }
 
 
-    private List<ValueSet> findTerms(char requiredValue, boolean includeDoNotCare) {
+    private List<ValueSet> getTerms(char requiredValue, boolean includeDoNotCare) {
         List<ValueSet> valueSets = new ArrayList<>();
 
         for (int x = 0; x < sizeX(); x++) {
@@ -162,7 +166,7 @@ public class KMap {
     }
 
 
-    private List<ValueSet> allValueSets(char requiredValue) {
+    private List<ValueSet> findTerms(char requiredValue) {
         List<ValueSet> valueSets = new ArrayList<>();
 
         for (int x = 0; x < sizeX(); x++) {
@@ -179,7 +183,7 @@ public class KMap {
     }
 
 
-    private List<ValueSet> findImplicants(List<ValueSet> oldImplicants, boolean isSOP) {
+    private List<ValueSet> findPrimeImplicants(List<ValueSet> oldImplicants, boolean isSOP) {
         List<ValueSet> foundImplicants = new ArrayList<>();
 
         for (int i = 0; i < oldImplicants.size(); i++) {
@@ -212,7 +216,7 @@ public class KMap {
 
     private List<ValueSet> findNonEssentialImplicants(boolean isSOP) {
         List<ValueSet> primeImplicants = new ArrayList<>(isSOP ? primeImplicantsSOP : primeImplicantsPOS);
-        List<ValueSet> essentialPrimeImplicants = (isSOP ? essentialPrimeImplicantsSOP : essentialPrimeImplicantsPOS);
+        List<ValueSet> essentialPrimeImplicants = (isSOP ? minimalCoverSOP : minimalCoverPOS);
 
         for (ValueSet essentialPrimeImplicant : essentialPrimeImplicants) {
             primeImplicants.remove(essentialPrimeImplicant);
@@ -224,12 +228,13 @@ public class KMap {
 
     private List<ValueSet> findEssentialImplicants(List<ValueSet> terms, List<ValueSet> essentialImplicants, List<ValueSet> primeImplicants, boolean first) {
 
+        // link terms and implicants on the first call
         if (first) {
             for (ValueSet term : terms) {
-                for (ValueSet valueSet : primeImplicants) {
-                    if (valueSet.contains(term)) {
-                        term.addImplicant(valueSet);
-                        valueSet.addImplicant(term);
+                for (ValueSet implicant : primeImplicants) {
+                    if (implicant.contains(term)) {
+                        term.addImplicant(implicant);
+                        implicant.addImplicant(term);
                     }
                 }
             }
@@ -239,11 +244,11 @@ public class KMap {
 
         List<ValueSet> temp = new ArrayList<>(List.copyOf(terms));
         for (ValueSet term : terms) {
-            if (term.getPrimeImplicants().size() == 1) {
-                ValueSet implicant = term.getPrimeImplicants().get(0);
+            if (term.getLinkedImplicants().size() == 1) {
+                ValueSet implicant = term.getLinkedImplicants().get(0);
                 if (!essentialImplicants.contains(implicant)) {
                     essentialImplicants.add(implicant);
-                    for (ValueSet valueSet : implicant.getPrimeImplicants()) {
+                    for (ValueSet valueSet : implicant.getLinkedImplicants()) {
                         temp.remove(valueSet);
                     }
                 }
@@ -262,7 +267,7 @@ public class KMap {
 
         // remove all implicants with terms that are covered
         for (ValueSet implicant : implicants) {
-            implicant.getPrimeImplicants().removeIf(s -> !terms.contains(s));
+            implicant.getLinkedImplicants().removeIf(s -> !terms.contains(s));
         }
 
         // add implicants until all terms are covered
@@ -274,31 +279,31 @@ public class KMap {
             newPrimeImplicants.add(implicant);
 
             // remove used terms
-            terms.removeIf(s -> implicant.getPrimeImplicants().contains(s));
+            terms.removeIf(s -> implicant.getLinkedImplicants().contains(s));
 
             // remove all redundant implicants
             for (ValueSet implicant1 : implicants) {
-                implicant1.getPrimeImplicants().removeIf(s -> !terms.contains(s));
+                implicant1.getLinkedImplicants().removeIf(s -> !terms.contains(s));
             }
-            implicants.removeIf(s -> s.getPrimeImplicants().size() == 0);
+            implicants.removeIf(s -> s.getLinkedImplicants().size() == 0);
 
             // remove what is covered by others
             removeCovered(implicants);
 
             // remove deleted implicants from terms
             for (ValueSet term : terms) {
-                term.getPrimeImplicants().removeIf(s -> !implicants.contains(s));
+                term.getLinkedImplicants().removeIf(s -> !implicants.contains(s));
             }
-            terms.removeIf(s -> s.getPrimeImplicants().size() == 0);
+            terms.removeIf(s -> s.getLinkedImplicants().size() == 0);
 
             //find essential implicants again
             findEssentialImplicants(terms, newPrimeImplicants, implicants, false);
 
             // remove all redundant implicants
             for (ValueSet implicant1 : implicants) {
-                implicant1.getPrimeImplicants().removeIf(s -> !terms.contains(s));
+                implicant1.getLinkedImplicants().removeIf(s -> !terms.contains(s));
             }
-            implicants.removeIf(s -> s.getPrimeImplicants().size() == 0);
+            implicants.removeIf(s -> s.getLinkedImplicants().size() == 0);
         }
 
         return newPrimeImplicants;
@@ -310,8 +315,8 @@ public class KMap {
         for (int i = 0; i < implicants.size(); i++) {
             loop:
             for (int j = i + 1; j < implicants.size(); j++) {
-                for (ValueSet term : implicants.get(i).getPrimeImplicants()) {
-                    if (!implicants.get(j).getPrimeImplicants().contains(term)) {
+                for (ValueSet term : implicants.get(i).getLinkedImplicants()) {
+                    if (!implicants.get(j).getLinkedImplicants().contains(term)) {
                         continue loop;
                     }
                 }

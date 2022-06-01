@@ -26,18 +26,18 @@
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Settings">
                                     <items>
-                                        <CheckMenuItem fx:id="showOnlyRelevant" mnemonicParsing="false" text="Show Only relevant values" />
+                                        <CheckMenuItem fx:id="showOnlyRelevant" mnemonicParsing="false" text="Show only relevant values" />
                                         <CheckMenuItem fx:id="showIndexes" mnemonicParsing="false" text="Show indexes" />
                               <SeparatorMenuItem mnemonicParsing="false" />
-                              <RadioMenuItem fx:id="initZeros" mnemonicParsing="false" text="Intialize truth tabel with zeros" />
-                              <RadioMenuItem fx:id="initOnes" mnemonicParsing="false" text="Intialize truth tabel with ones" />
-                              <RadioMenuItem fx:id="initDontCares" mnemonicParsing="false" text="Intialize truth tabel with do-not-cares" />
+                              <RadioMenuItem fx:id="initZeros" mnemonicParsing="false" text="Intialize truth table with zeros" />
+                              <RadioMenuItem fx:id="initOnes" mnemonicParsing="false" text="Intialize truth table with ones" />
+                              <RadioMenuItem fx:id="initDontCares" mnemonicParsing="false" text="Intialize truth table with do-not-cares" />
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Help">
                                     <items>
                                         <MenuItem fx:id="about" mnemonicParsing="false" text="About" />
-                                        <MenuItem fx:id="help" mnemonicParsing="false" text="Help" />
+                                        <!-- <MenuItem fx:id="help" mnemonicParsing="false" text="Help" /> -->
                                     </items>
                                 </Menu>
                             </menus>
@@ -48,7 +48,7 @@
             <left>
                 <AnchorPane prefWidth="175.0" BorderPane.alignment="CENTER">
                     <children>
-                        <Label text="Truth tabel" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
+                        <Label text="Truth table" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                         <TableView fx:id="truthTable" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="25.0" />
                   <HBox spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
                      <children>
