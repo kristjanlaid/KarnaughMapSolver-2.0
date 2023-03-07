@@ -1,7 +1,11 @@
 package project.karnaughmapsolver;
 
+import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -9,9 +13,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.paint.PhongMaterial;
+import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
+import javafx.scene.transform.Rotate;
+import javafx.stage.Stage;
+import javafx.util.Duration;
+import javafx.scene.shape.Box;
 
 import java.net.URL;
 import java.util.*;
@@ -42,8 +52,8 @@ public class MainViewController implements Initializable {
     private MenuItem exit;
     @FXML
     private MenuItem about;
-    //@FXML
-    //private MenuItem help;
+    @FXML
+    private MenuItem help;
     @FXML
     private CheckMenuItem showOnlyRelevant;
     @FXML
@@ -54,6 +64,8 @@ public class MainViewController implements Initializable {
     private RadioMenuItem initOnes;
     @FXML
     private RadioMenuItem initDontCares;
+    @FXML
+    private RadioMenuItem initRandom;
     @FXML
     private Canvas canvasPOS;
     @FXML
@@ -77,6 +89,13 @@ public class MainViewController implements Initializable {
     @FXML
     private void allSetDoNotCareClicked() {
         setAll('?');
+    }
+
+    @FXML
+    private void allSetRandomizedClicked() {
+        Random rand = new Random();
+        char rand_int = (char)(rand.nextInt(2)+'0');
+        setRandom(rand_int);
     }
 
     @FXML
@@ -105,6 +124,19 @@ public class MainViewController implements Initializable {
         }
     }
 
+    private void setRandom(char c) {
+        if (!truthTable.getItems().isEmpty()) {
+            for (ValueSet item : truthTable.getItems()) {
+                Random rand = new Random();
+                char rand_int = (char)(rand.nextInt(2)+'0');
+                item.setF(rand_int);
+            }
+            truthTable.refresh();
+            updateKMap();
+            updateCanvas();
+        }
+    }
+
     private void initTruthTable() {
         truthTable.setOnMouseClicked(event -> {
             ValueSet focusedItem = truthTable.getFocusModel().getFocusedItem();
@@ -118,7 +150,7 @@ public class MainViewController implements Initializable {
     }
 
     private void initMenuItems() {
-        variablesChoiceBox.getItems().addAll(2, 3, 4, 5, 6);
+        variablesChoiceBox.getItems().addAll(2, 3, 4, 5, 6, 7);
         variablesChoiceBox.setOnAction(event -> {
             variableChange();
             if (variablesChoiceBox.getValue() > 5) {
@@ -139,6 +171,7 @@ public class MainViewController implements Initializable {
         initZeros.setToggleGroup(tg);
         initOnes.setToggleGroup(tg);
         initDontCares.setToggleGroup(tg);
+        initRandom.setToggleGroup(tg);
         initZeros.setSelected(true);
 
         spacingSlider.setMin(2);
@@ -190,20 +223,56 @@ public class MainViewController implements Initializable {
         });
         about.setOnAction(event -> {
             Alert alert = new Alert(Alert.AlertType.NONE, "", ButtonType.OK);
-            alert.setTitle("Help");
-            alert.setContentText("""
-                    This is an application for simplifying boolean functions using Karnaugh Map method.
+            alert.setTitle("About");
+            String content = """
+                    About the authors
+                        
+                    This is an application was first developed by Kaarel Kütt in 2022 for simplifying boolean functions using Karnaugh Map method.
+                    
+                    In 2023 the application was further developed by Kristjan Laid with the addition of 3D model of the karnaugh Map method
+                    
+                    as well as adding new variable, optimizing code, schemes presented with only NAND and NORs and other developments
+                    """;
+            TextArea area = new TextArea(content);
+            area.setWrapText(true);
+            area.setEditable(false);
 
-                    Kaarel Kütt
-                    2022""");
+            alert.getDialogPane().setContent(area);
+            alert.setResizable(true);
             alert.showAndWait();
         });
-//        help.setOnAction(event -> {
-//            Alert alert = new Alert(Alert.AlertType.NONE, "", ButtonType.OK);
-//            alert.setTitle("Help");
-//            alert.setContentText("How to use this application");
-//            alert.showAndWait();
-//        });
+        help.setOnAction(event -> {
+            Alert alert = new Alert(Alert.AlertType.NONE, "", ButtonType.OK);
+            alert.setTitle("Help");
+            String content = """
+                    What is a Karnaugh Map
+
+                    Karnaugh Map is a a method used for simplifying Boolean algebra expressions. It was first intoduced by Maurice Karnaugh in 1953
+                    
+                    as a refined method of Veitch's chart which was itself a rediscovery of Marquand diagram. Karnaugh maps are also known as 
+
+                    Karnaugh-Veitch maps.
+
+                    How to use this application
+
+                    Step 1) Choose the number of variables
+
+                    Step 2) Either use Set all 0, Set all 1 or Set all ? or you can also manually set each row y value by clicking on them.
+
+                    Step 3) From settings you can toggle indexes and showing only relevant values to declutter the view.
+
+                    Step 4) Click on Solve and the result will show up in the bottom of the window.
+
+                    Step 5) Check Show in 3D to see the Karnaugh Map in 3d view which can be panned and rotated in all directions.        
+                    """;
+            TextArea area = new TextArea(content);
+            area.setWrapText(true);
+            area.setEditable(false);
+
+            alert.getDialogPane().setContent(area);
+            alert.setResizable(true);
+            alert.showAndWait();
+        });
     }
 
     private void variableChange() {
@@ -265,6 +334,10 @@ public class MainViewController implements Initializable {
                 initValue = '0';
             } else if (initOnes.isSelected()) {
                 initValue = '1';
+            } else if (initRandom.isSelected()) {
+                Random rand = new Random();
+                char rand_int = (char)(rand.nextInt(2)+'0');
+                initValue = rand_int;
             } else {
                 initValue = '?';
             }
@@ -298,6 +371,7 @@ public class MainViewController implements Initializable {
                     for (int x = 0; x < kMap.sizeX(); x++) {
                         for (int y = 0; y < kMap.sizeY(); y++) {
                             drawElement(x, y, offset, offset, rectSize, kMap.getValue(x, y, z), context);
+                            drawCube(canvasSOP);
                         }
                     }
                 } else {
@@ -332,6 +406,47 @@ public class MainViewController implements Initializable {
         }
     }
 
+    private void drawCube(Canvas stage) {
+
+        Box box = createCube();
+        Group root = new Group(); //layout
+        root.getChildren().add(box);
+        
+        PerspectiveCamera camera = new PerspectiveCamera();
+        
+        Scene scene = new Scene(root, 850, 650); //show scene
+        scene.setCamera(camera);
+        
+    }
+
+    Box createCube(){
+        Box box = new Box();
+        box.setWidth(300); //x size
+        box.setHeight(300); // y size
+        box.setDepth(300);// z size
+        
+        box.setTranslateX(300);
+        box.setTranslateY(300);
+        box.setTranslateZ(0);
+        
+        PhongMaterial mat = new PhongMaterial();
+        mat.setSpecularColor(Color.BLACK);
+        mat.setDiffuseColor(Color.RED);
+        
+        box.setMaterial(mat);
+        
+        Rotate xRotation = new Rotate(25, Rotate.X_AXIS);
+        Rotate yRotation = new Rotate(25, Rotate.Y_AXIS);
+        box.getTransforms().addAll(xRotation, yRotation);
+        
+       RotateTransition rt = new RotateTransition(Duration.millis(1000), box);
+       rt.setAxis(Rotate.X_AXIS);
+       rt.setByAngle(360);
+       rt.setCycleCount(10);
+       rt.play();
+       return box;
+    }
+
     private void drawHeaders(GraphicsContext context, int rectSize) {
         int variables = variablesChoiceBox.getValue();
         context.setFont(new Font(15));
@@ -344,7 +459,7 @@ public class MainViewController implements Initializable {
 
         String[][] labels = {{"0", "1"}, {"00", "01", "11", "10"}, {"000", "001", "011", "010", "110", "111", "101", "100"}};
 
-        String letters = "ABCDEF";
+        String letters = "ABCDEFG";
         int charIndex = 0;
 
         //z axle
@@ -414,7 +529,7 @@ public class MainViewController implements Initializable {
     }
 
     private Color getColor(int multiplier, double val) {
-        int hex = (int) (0x44 + multiplier * val * 5);
+        int hex = (int) (0x44 + multiplier * val * 20);
         String color = Integer.toHexString(hex).repeat(3);
         double opacity = 1 - multiplier * val * 0.02;
         return Color.web(color, opacity);
