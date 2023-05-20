@@ -12,15 +12,18 @@ public class ValueSet implements Comparable<ValueSet> {
     private boolean highlighted = false;
     private boolean clicked = false;
     private String color;
+    private int index;
 
-    public ValueSet(int number, int length, char f) {
-        this.binary = Integer.toBinaryString(0b1000000 | number).substring(7 - length).toCharArray();
+    public ValueSet(int number, int length, char f, int index) {
+        this.binary = Integer.toBinaryString(0b10000000 | number).substring(8 - length).toCharArray();
         this.f = f;
+        this.index = index;
     }
 
     public ValueSet(ValueSet valueSet) {
         this.binary = valueSet.getBinary().clone();
         this.f = valueSet.getF();
+        this.index = valueSet.getIndex();
     }
 
     public char[] getBinary() {
@@ -107,6 +110,8 @@ public class ValueSet implements Comparable<ValueSet> {
     public char getX5() {
         return binary[5];
     }
+
+    public char getX6() { return binary[6]; }
 
     public int getIndex() {
         return Integer.parseInt(String.valueOf(binary), 2);

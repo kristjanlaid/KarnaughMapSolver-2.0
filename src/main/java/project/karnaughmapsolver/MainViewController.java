@@ -1,11 +1,7 @@
 package project.karnaughmapsolver;
 
-import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -13,15 +9,9 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.shape.Box;
 
 import java.net.URL;
 import java.util.*;
@@ -29,6 +19,7 @@ import java.util.*;
 public class MainViewController implements Initializable {
 
     private KMap kMap;
+    String letters = "ABCDEFG";
 
     @FXML
     private TableView<ValueSet> truthTable;
@@ -74,6 +65,8 @@ public class MainViewController implements Initializable {
     private TextFlow solutionTextPOS;
     @FXML
     private TextFlow solutionTextSOP;
+    @FXML
+    private Button inputButton;
 
 
     @FXML
@@ -287,8 +280,23 @@ public class MainViewController implements Initializable {
 
     private void loadTruthTable() {
         int numberOfVariables = variablesChoiceBox.getValue();
+        int numberOfRows = (int) Math.pow(2, numberOfVariables);
+
         truthTable.getItems().clear();
         truthTable.getColumns().clear();
+
+        truthTable.isTableMenuButtonVisible();
+
+        // Add index column
+        TableColumn<ValueSet, Integer> indexColumn = new TableColumn<>("i");
+        indexColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
+        indexColumn.setPrefWidth(20);
+        indexColumn.setResizable(false);
+        indexColumn.setStyle("-fx-font-weight: bold;-fx-font-size: 10px;");
+        truthTable.getColumns().add(indexColumn);
+        for (int i = 0; i < numberOfRows; i++) {
+
+        }
 
         // Add colums according to number of variables
         for (int i = 0; i < numberOfVariables; i++) {
@@ -297,6 +305,7 @@ public class MainViewController implements Initializable {
             column.setPrefWidth(20);
             column.setSortable(false);
             column.setResizable(false);
+            column.isEditable();
             truthTable.getColumns().add(column);
         }
         TableColumn<ValueSet, String> column = new TableColumn<>("y");
@@ -327,7 +336,8 @@ public class MainViewController implements Initializable {
         });
 
         // Add truth table values
-        int numberOfRows = (int) Math.pow(2, numberOfVariables);
+        //int numberOfRows = (int) Math.pow(2, numberOfVariables);
+        int idx = 0;
         for (int i = 0; i < numberOfRows; i++) {
             char initValue;
             if (initZeros.isSelected()) {
@@ -341,8 +351,9 @@ public class MainViewController implements Initializable {
             } else {
                 initValue = '?';
             }
-            ValueSet valueSet = new ValueSet(i, numberOfVariables, initValue);
+            ValueSet valueSet = new ValueSet(i, numberOfVariables, initValue, idx);
             truthTable.getItems().add(valueSet);
+            idx += 1;
         }
 
         truthTable.refresh();
@@ -354,7 +365,7 @@ public class MainViewController implements Initializable {
         }
 
         GraphicsContext[] graphicsContexts = {canvasPOS.getGraphicsContext2D(), canvasSOP.getGraphicsContext2D()};
-        int rectSize = 35;
+        int rectSize = 35; //3D view rectangle size for each value
 
         for (GraphicsContext context : graphicsContexts) {
             context.clearRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
@@ -371,7 +382,6 @@ public class MainViewController implements Initializable {
                     for (int x = 0; x < kMap.sizeX(); x++) {
                         for (int y = 0; y < kMap.sizeY(); y++) {
                             drawElement(x, y, offset, offset, rectSize, kMap.getValue(x, y, z), context);
-                            drawCube(canvasSOP);
                         }
                     }
                 } else {
@@ -406,46 +416,7 @@ public class MainViewController implements Initializable {
         }
     }
 
-    private void drawCube(Canvas stage) {
 
-        Box box = createCube();
-        Group root = new Group(); //layout
-        root.getChildren().add(box);
-        
-        PerspectiveCamera camera = new PerspectiveCamera();
-        
-        Scene scene = new Scene(root, 850, 650); //show scene
-        scene.setCamera(camera);
-        
-    }
-
-    Box createCube(){
-        Box box = new Box();
-        box.setWidth(300); //x size
-        box.setHeight(300); // y size
-        box.setDepth(300);// z size
-        
-        box.setTranslateX(300);
-        box.setTranslateY(300);
-        box.setTranslateZ(0);
-        
-        PhongMaterial mat = new PhongMaterial();
-        mat.setSpecularColor(Color.BLACK);
-        mat.setDiffuseColor(Color.RED);
-        
-        box.setMaterial(mat);
-        
-        Rotate xRotation = new Rotate(25, Rotate.X_AXIS);
-        Rotate yRotation = new Rotate(25, Rotate.Y_AXIS);
-        box.getTransforms().addAll(xRotation, yRotation);
-        
-       RotateTransition rt = new RotateTransition(Duration.millis(1000), box);
-       rt.setAxis(Rotate.X_AXIS);
-       rt.setByAngle(360);
-       rt.setCycleCount(10);
-       rt.play();
-       return box;
-    }
 
     private void drawHeaders(GraphicsContext context, int rectSize) {
         int variables = variablesChoiceBox.getValue();
@@ -457,32 +428,46 @@ public class MainViewController implements Initializable {
         }
 
 
-        String[][] labels = {{"0", "1"}, {"00", "01", "11", "10"}, {"000", "001", "011", "010", "110", "111", "101", "100"}};
+        String[][] labels = {{"0", "1"},
+                                {"00", "01", "11", "10"},
+                                {"000", "001", "011", "010", "110", "111", "101", "100"},
+                                {"111"},
+                                {"0000", "0001", "0011", "0010",
+                                 "0110", "0111", "0101", "0100",
+                                 "1100", "1101", "1111", "1110",
+                                 "1010", "1011", "1001", "1000"}};
 
-        String letters = "ABCDEFG";
         int charIndex = 0;
 
         //z axle
-        int lim = (show3D.isSelected() && variables > 4) ? ((variables > 5) ? 4 : 2) : 0;
-        context.fillText(letters.substring(charIndex, charIndex + lim / 2), 80 + 4 * rectSize, 25);
-        charIndex = charIndex + lim / 2;
-        for (int i = 0; i < lim; i++) {
-            context.fillText(labels[lim / 4][i], 63 + 4 * rectSize + i * Math.max(spacingSlider.getValue(), 12), 43 + i * Math.max(spacingSlider.getValue(), 12));
+        int limZ = (show3D.isSelected() && variables > 4) ? ((variables > 5) ? 4 : 2) : 0;
+        context.fillText(letters.substring(charIndex, charIndex + limZ / 2), 80 + 4 * rectSize, 25);
+        charIndex = charIndex + limZ / 2;
+        for (int i = 0; i < limZ; i++) {
+            context.fillText(labels[limZ / 4][i], 63 + 4 * rectSize + i * Math.max(spacingSlider.getValue(), 12), 43 + i * Math.max(spacingSlider.getValue(), 12));
         }
 
         //x axle
-        lim = (!show3D.isSelected() && variables > 4) ? 8 : ((variables > 2) ? 4 : 2);
-        context.fillText(letters.substring(charIndex, charIndex + lim / 4 + 1), 30, 12);
-        charIndex = charIndex + lim / 4 + 1;
-        for (int i = 0; i < lim; i++) {
-            context.fillText(labels[lim / 4][i], 62 + i * rectSize - lim / 4 * 3, 35);
+        int limX = (!show3D.isSelected() && variables > 6) ? 16 : ((!show3D.isSelected() && variables > 4) ? 8 : ((variables > 2) ? 4 : 2));
+        if (limX == 16) {
+            context.fillText(letters.substring(charIndex, 4), 30, 12);
+        } else {
+            context.fillText(letters.substring(charIndex, charIndex + limX / 4 + 1), 30, 12);
+        }
+        charIndex = charIndex + limX / 4 + 1;
+        for (int i = 0; i < limX; i++) {
+            context.fillText(labels[limX / 4][i], 62 + i * rectSize - limX / 4 * 3, 35);
         }
 
         //y axle
-        lim = (!show3D.isSelected() && variables > 5) ? 8 : ((variables > 3) ? 4 : 2);
-        context.fillText(letters.substring(charIndex, charIndex + lim / 4 + 1), 10 - lim, 35);
-        for (int i = 0; i < lim; i++) {
-            context.fillText(labels[lim / 4][i], 30 - lim / 4 * 3, 62 + i * rectSize);
+        int limY = (!show3D.isSelected() && variables > 5) ? 8 : ((variables > 3) ? 4 : 2);
+        if (limY == 8 && limX == 16) {
+            context.fillText(letters.substring(4), 10 - limY, 35);
+        } else {
+            context.fillText(letters.substring(charIndex, charIndex + limY / 4 + 1), 10 - limY, 35);
+        }
+        for (int i = 0; i < limY; i++) {
+            context.fillText(labels[limY / 4][i], 30 - limY / 4 * 3, 62 + i * rectSize);
         }
     }
 
@@ -494,6 +479,7 @@ public class MainViewController implements Initializable {
             double opacity = implicant.isHighlighted() ? 0.9 : (13 - cellOpacitySlider.getValue()) / 10 * 0.2;
             context.setFill(Color.web(implicant.getColor(), opacity));
             context.fillRect(50 + xOffset + x * rectSize, 40 + yOffset + y * rectSize, rectSize, rectSize);
+
         }
 
         if (valueSet.isClicked()) {

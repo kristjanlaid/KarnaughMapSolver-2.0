@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="630.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
     <children>
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -47,16 +47,17 @@
                 </AnchorPane>
             </top>
             <left>
-                <AnchorPane prefWidth="250.0" BorderPane.alignment="CENTER">
+                <AnchorPane prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label text="Truth table" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                        <TableView fx:id="truthTable" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="25.0" />
+                        <Button fx:id="inputButton" text="Inputs" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="3.0" prefHeight="3.0"/>
+                        <TableView fx:id="truthTable" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0" />
                   <HBox spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
                      <children>
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetZeroClicked" text="All '0'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetOneClicked" text="All '1'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetDoNotCareClicked" text="All '?'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetRandomizedClicked" text="All 'x'" />
+                        <Button mnemonicParsing="false" onMouseClicked="#allSetZeroClicked" text="'0'" />
+                        <Button mnemonicParsing="false" onMouseClicked="#allSetOneClicked" text="'1'" />
+                        <Button mnemonicParsing="false" onMouseClicked="#allSetDoNotCareClicked" text="'?'" />
+                        <Button mnemonicParsing="false" onMouseClicked="#allSetRandomizedClicked" text="'Rand'" />
                      </children>
                   </HBox>
                     </children>
@@ -104,52 +105,52 @@
                                 <AnchorPane prefHeight="365.0">
                                     <children>
                                         <Label text="Sum Of Product" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                              <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="420.0" AnchorPane.topAnchor="5.0" />
-                                        <AnchorPane prefWidth="404.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
-                                 <padding>
-                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                 </padding>
-                                 <children>
-                                    <Canvas fx:id="canvasSOP" height="336.0" width="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children>
+                                        <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="5.0" />
+                                        <AnchorPane prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                             <padding>
+                                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                             </padding>
+                                             <children>
+                                                <Canvas fx:id="canvasSOP" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
                                         </AnchorPane>
-                              <AnchorPane prefWidth="404.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-                                 <children>
-                                    <Canvas fx:id="canvasPOS" height="336.0" width="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                 </children>
-                                 <padding>
-                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                 </padding>
-                              </AnchorPane>
+                                        <AnchorPane prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                            <children>
+                                                <Canvas fx:id="canvasPOS" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children>
+                                            <padding>
+                                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                            </padding>
+                                        </AnchorPane>
                                     </children>
                                 </AnchorPane>
                                 <AnchorPane minHeight="150.0" VBox.vgrow="ALWAYS">
                                     <children>
                                         <Label text="Solution" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                                         <Button mnemonicParsing="false" onMousePressed="#solveButtonClicked" text="Solve" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
-                              <ScrollPane fitToWidth="true" pannable="true" prefWidth="406.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="27.0">
-                                <content>
-                                    <TextFlow fx:id="solutionTextSOP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </TextFlow>
-                                </content>
-                              </ScrollPane>
-                              <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="10.0" pannable="true" prefWidth="406.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
-                                 <content>
-                                    <TextFlow fx:id="solutionTextPOS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                       <padding>
-                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                       </padding>
-                                    </TextFlow>
-                                 </content>
-                              </ScrollPane>
+                                        <ScrollPane fitToWidth="true" pannable="true" prefWidth="806.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="27.0">
+                                            <content>
+                                                <TextFlow fx:id="solutionTextSOP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <padding>
+                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                   </padding>
+                                                </TextFlow>
+                                            </content>
+                                        </ScrollPane>
+                                        <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="10.0" pannable="true" prefWidth="900.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
+                                            <content>
+                                                <TextFlow fx:id="solutionTextPOS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                    <padding>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                    </padding>
+                                                </TextFlow>
+                                            </content>
+                                        </ScrollPane>
                                     </children>
                                 </AnchorPane>
                      </children>
                   </VBox>
-                  <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="411.0" AnchorPane.topAnchor="90.0" />
+                  <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="811.0" AnchorPane.topAnchor="90.0" />
                     </children></AnchorPane>
             </center>
             <bottom>

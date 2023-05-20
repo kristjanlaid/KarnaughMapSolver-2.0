@@ -9,7 +9,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="630.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
+<AnchorPane prefHeight="630.0" prefWidth="1250.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
     <children>
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -32,12 +32,13 @@
                               <RadioMenuItem fx:id="initZeros" mnemonicParsing="false" text="Intialize truth table with zeros" />
                               <RadioMenuItem fx:id="initOnes" mnemonicParsing="false" text="Intialize truth table with ones" />
                               <RadioMenuItem fx:id="initDontCares" mnemonicParsing="false" text="Intialize truth table with do-not-cares" />
+                              <RadioMenuItem fx:id="initRandom" mnemonicParsing="false" text="Intialize truth table with random" />
                                     </items>
                                 </Menu>
                                 <Menu mnemonicParsing="false" text="Help">
                                     <items>
                                         <MenuItem fx:id="about" mnemonicParsing="false" text="About" />
-                                        <!-- <MenuItem fx:id="help" mnemonicParsing="false" text="Help" /> -->
+                                        <MenuItem fx:id="help" mnemonicParsing="false" text="Help" />
                                     </items>
                                 </Menu>
                             </menus>
@@ -46,7 +47,7 @@
                 </AnchorPane>
             </top>
             <left>
-                <AnchorPane prefWidth="175.0" BorderPane.alignment="CENTER">
+                <AnchorPane prefWidth="250.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label text="Truth table" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                         <TableView fx:id="truthTable" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="25.0" />
@@ -55,6 +56,7 @@
                         <Button mnemonicParsing="false" onMouseClicked="#allSetZeroClicked" text="All '0'" />
                         <Button mnemonicParsing="false" onMouseClicked="#allSetOneClicked" text="All '1'" />
                         <Button mnemonicParsing="false" onMouseClicked="#allSetDoNotCareClicked" text="All '?'" />
+                        <Button mnemonicParsing="false" onMouseClicked="#allSetRandomizedClicked" text="All 'x'" />
                      </children>
                   </HBox>
                     </children>
