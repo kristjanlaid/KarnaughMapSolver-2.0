@@ -87,6 +87,7 @@ public class KMap {
             case 4 -> new ValueSet[4][4][1];
             case 5 -> new ValueSet[4][4][2];
             case 6 -> new ValueSet[4][4][4];
+            case 7 -> new ValueSet[8][4][4];
             default -> new ValueSet[1][1][1];
         };
     }
