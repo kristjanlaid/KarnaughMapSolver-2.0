@@ -2,7 +2,9 @@ package project.karnaughmapsolver;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.*;
+import javafx.scene.Group;
+import javafx.scene.PerspectiveCamera;
+import javafx.scene.SubScene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -17,6 +19,8 @@ import javafx.scene.text.TextFlow;
 
 import java.net.URL;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MainViewController implements Initializable {
 
@@ -578,33 +582,67 @@ public class MainViewController implements Initializable {
 
         solutionTextSOP.getChildren().add(new Text("Prime implicants: \n"));
         solutionTextPOS.getChildren().add(new Text("Prime implicants: \n"));
-
+        int sumSOP = 0;
+        int sumPOS = 0;
         for (int i = 0; i < kMap.getPrimeImplicantsSOP().size(); i++) {
             ValueSet valueSet = kMap.getPrimeImplicantsSOP().get(i);
-            Text text = new Text(valueSet.getFormulaSOP());
+            String formula = valueSet.getFormulaSOP();
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher(formula);
+            while(m.find()) {
+                sumSOP += Integer.parseInt(m.group());
+            }
+            formula = formula.replaceAll("\\d", "");
+            Text text = new Text(formula);
             bindTextWithValueSet(text, valueSet);
             Text sign = new Text((i == kMap.getPrimeImplicantsSOP().size() - 1) ? "" : " + ");
             solutionTextSOP.getChildren().addAll(text, sign);
         }
+
+        int SOPgates = getGateCount(getTextFromTextFlow(solutionTextSOP), "+");
+
+        int gateCountSOP = getGateCount(getTextFromTextFlow(solutionTextSOP), "+") + sumSOP;
+
         if (kMap.getPrimeImplicantsSOP().size() == 0) {
             solutionTextSOP.getChildren().add(new Text("0"));
         }
 
         for (ValueSet valueSet : kMap.getPrimeImplicantsPOS()) {
-            Text text = new Text(valueSet.getFormulaPOS() + "  ");
+            String formula = valueSet.getFormulaPOS();
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher(formula);
+            while(m.find()) {
+                sumPOS += Integer.parseInt(m.group());
+            }
+            formula = formula.replaceAll("\\d", "");
+            Text text = new Text(formula + "  ");
             bindTextWithValueSet(text, valueSet);
             solutionTextPOS.getChildren().add(text);
         }
         if (kMap.getPrimeImplicantsPOS().size() == 0) {
             solutionTextPOS.getChildren().add(new Text("1"));
         }
+        int POSgates = getGateCount(getTextFromTextFlow(solutionTextPOS), "+");
+        int gateCountPOS = getGateCount(getTextFromTextFlow(solutionTextPOS), "+") + sumPOS;
 
-        solutionTextSOP.getChildren().add(new Text("\n\nMinimal SOP function: \n"));
-        solutionTextPOS.getChildren().add(new Text("\n\nMinimal POS function: \n"));
+        solutionTextSOP.getChildren().add(new Text("\nGatecount: " + gateCountSOP));
+        solutionTextPOS.getChildren().add(new Text("\nGatecount: " + gateCountPOS));
 
+        solutionTextSOP.getChildren().add(new Text("\n\nSimplified SOP function: \n"));
+        solutionTextPOS.getChildren().add(new Text("\n\nSimplified POS function: \n"));
+
+        sumSOP = 0;
+        sumPOS = 0;
         for (int i = 0; i < kMap.getMinimalCoverSOP().size(); i++) {
             ValueSet valueSet = kMap.getMinimalCoverSOP().get(i);
-            Text text = new Text(valueSet.getFormulaSOP());
+            String formula = valueSet.getFormulaSOP();
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher(formula);
+            while(m.find()) {
+                sumSOP += Integer.parseInt(m.group());
+            }
+            formula = formula.replaceAll("\\d", "");
+            Text text = new Text(formula);
             bindTextWithValueSet(text, valueSet);
             Text sign = new Text((i == kMap.getMinimalCoverSOP().size() - 1) ? "" : " + ");
             solutionTextSOP.getChildren().addAll(text, sign);
@@ -614,7 +652,14 @@ public class MainViewController implements Initializable {
         }
 
         for (ValueSet valueSet : kMap.getMinimalCoverPOS()) {
-            Text text = new Text(valueSet.getFormulaPOS() + "  ");
+            String formula = valueSet.getFormulaPOS();
+            Pattern p = Pattern.compile("\\d+");
+            Matcher m = p.matcher(formula);
+            while(m.find()) {
+                sumPOS += Integer.parseInt(m.group());
+            }
+            formula = formula.replaceAll("\\d", "");
+            Text text = new Text(formula + "  ");
             bindTextWithValueSet(text, valueSet);
             solutionTextPOS.getChildren().add(text);
         }
@@ -622,52 +667,37 @@ public class MainViewController implements Initializable {
             solutionTextPOS.getChildren().add(new Text("1"));
         }
 
-        solutionTextSOP.getChildren().add(new Text("\n\nSimplified SOP function: \n"));
-        int gateCount = 0;
-        for (int i = 0; i < kMap.getMinimalCoverSOP().size(); i++) {
-            ValueSet valueSet = kMap.getPrimeImplicantsSOP().get(i);
-            String formula = valueSet.getSimplifiedSOPFormula();
-            int startIndex = formula.indexOf("Gate");
-            if (startIndex != -1) {
-                String removedString = formula.substring(startIndex);
-                formula = formula.replace(removedString, "");
+        int gateCountSOPMin = getGateCount(getTextFromTextFlow(solutionTextSOP), "+") - SOPgates + sumSOP;
+        int gateCountPOSMax = getGateCount(getTextFromTextFlow(solutionTextPOS), "+") - POSgates + sumSOP;
 
-                // Parse the integer from the removed string
-                String integerString = removedString.replaceAll("\\D", "");
-                int parsedInt = Integer.parseInt(integerString);
-                gateCount += parsedInt;
-            }
-            Text text = new Text(formula);
-            bindTextWithValueSet(text, valueSet);
-            Text sign = new Text((i == kMap.getMinimalCoverSOP().size() - 1) ? "" : " + ");
-            solutionTextSOP.getChildren().addAll(text, sign);
-        }
-        solutionTextSOP.getChildren().add(new Text(" Gatecount: " + gateCount));
-
-        solutionTextPOS.getChildren().add(new Text("\n\nSimplified POS function: \n"));
-        int gateCountPOS = 0;
-        for (int i = 0; i < kMap.getMinimalCoverPOS().size(); i++) {
-            ValueSet valueSet = kMap.getPrimeImplicantsPOS().get(i);
-            String formula = valueSet.getSimplifiedPOSFormula();
-            int startIndex = formula.indexOf("Gate");
-            if (startIndex != -1) {
-                String removedString = formula.substring(startIndex);
-                formula = formula.replace(removedString, "");
-
-                // Parse the integer from the removed string
-                String integerString = removedString.replaceAll("\\D", "");
-                int parsedInt = Integer.parseInt(integerString);
-                gateCountPOS += parsedInt;
-            }
-            Text text = new Text(formula);
-            bindTextWithValueSet(text, valueSet);
-            Text sign = new Text((i == kMap.getMinimalCoverPOS().size() - 1) ? "" : " + ");
-            solutionTextPOS.getChildren().addAll(text, sign);
-        }
-        solutionTextPOS.getChildren().add(new Text(" Gatecount: " + gateCountPOS));
-
+        solutionTextSOP.getChildren().add(new Text("\nGatecount: " + gateCountSOPMin));
+        solutionTextPOS.getChildren().add(new Text("\nGatecount: " + gateCountPOSMax));
 
         updateCanvas();
+    }
+
+    private int getGateCount(String formula, String gate) {
+        int count = 0;
+        int index = 0;
+
+        while ((index = formula.indexOf(gate, index)) != -1) {
+            count++;
+            index += gate.length();
+        }
+        return count;
+    }
+
+    public String getTextFromTextFlow(TextFlow textFlow) {
+        StringBuilder sb = new StringBuilder();
+
+        for (javafx.scene.Node node : textFlow.getChildren()) {
+            if (node instanceof Text) {
+                Text textNode = (Text) node;
+                sb.append(textNode.getText());
+            }
+        }
+
+        return sb.toString();
     }
 
     private void bindTextWithValueSet(Text text, ValueSet valueSet) {
