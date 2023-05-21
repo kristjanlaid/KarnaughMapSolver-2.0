@@ -8,11 +8,9 @@ public class LogicHelper {
         NOR
     }
 
-    public static void displaySimplifiedLogicSchema(GateType gateType, int gateCount, String logicExpression) {
-        System.out.println("Simplified Logic Schema:");
-        System.out.println("Gate Type: " + gateType);
-        System.out.println("Gate Count: " + gateCount);
-        System.out.println("Logic Expression: " + logicExpression);
+    public static String displaySimplifiedLogicSchema(GateType gateType, int gateCount, String logicExpression) {
+        String result = "Simplified Logic Schema: \n" + "Gate Type: " + gateType + "\nGate Count: " + gateCount + "\nLogic Expression: " + logicExpression;
+        return result;
     }
 
     public static String generateLogicSchema(String logicExpression) {
@@ -23,30 +21,16 @@ public class LogicHelper {
         return gateCount;
     }
 
-    public static void displayUnsimplifiedLogicSchema(int inputSize, String logicExpression) {
-        System.out.println("Unsimplified Logic Schema:");
-        System.out.println("Gate Type: AND");
-        System.out.println("Gate Count: " + inputSize);
-        System.out.println("Logic Expression: " + logicExpression);
+    public static String displayUnsimplifiedLogicSchema(int inputSize, String logicExpression) {
+        String result = "Unsimplified Logic Schema:\n" + "Gate Type: AND"+ "\nGate Count: " + inputSize + "\nLogic Expression: " + logicExpression;
+        return result;
+
+
     }
 
-    public static void displaySimplifiedLogicSchemaByGates(GateType gateType, int gateCount, String logicExpression) {
-        System.out.println("Simplified Logic Schema by Gates:");
-        System.out.println("Gate Type: " + gateType);
-        System.out.println("Gate Count: " + gateCount);
-        System.out.println("Logic Expression: " + logicExpression);
-    }
-
-    public static String generateLogicSchemaByGates(String logicExpression) {
-        return logicExpression;
-    }
-
-    public static int countGatesByType(GateType gateType, int gateCount) {
-        if (gateType == gateType) {
-            return gateCount;
-        } else {
-            return 0;
-        }
+    public static String displaySimplifiedLogicSchemaByGates(GateType gateType, int gateCount, String logicExpression) {
+        String result = "Simplified Logic Schema by Gates:\n" + "Gate Type: " + gateType + "\nGate Count: " + gateCount + "\nLogic Expression: " + logicExpression;
+        return result;
     }
 
 }

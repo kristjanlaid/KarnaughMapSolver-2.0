@@ -1,7 +1,6 @@
 package project.karnaughmapsolver;
 
-import project.karnaughmapsolver.LogicHelper.GateType;
-
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -163,6 +162,117 @@ public class ValueSet implements Comparable<ValueSet> {
         return sb.toString();
     }
 
+    public String getSimplifiedSOPFormula() {
+        String formula = getFormulaSOP();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula);
+
+        return formula;
+    }
+
+    public String getSimplifiedPOSFormula() {
+        String formula = getFormulaPOS();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula);
+
+        return formula;
+    }
+
+    private String applyBooleanAlgebraReduction(String formula) {
+
+        int gateCount = 0;
+
+        for (int i = 0; i < binary.length; i++) {
+            char searchchar = (char) ('A' + i);
+            String searchcharInverse = String.valueOf('¬' + searchchar);
+
+            // Complementation rule
+            if (formula.contains(searchchar + " + " + searchcharInverse) || formula.contains(searchcharInverse + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {1}", searchchar, searchcharInverse), "1");
+                formula = formula.replace(MessageFormat.format("{1} + {0}", searchchar, searchcharInverse), "1");
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + "" + searchcharInverse) || formula.contains(searchcharInverse + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0}{1}", searchchar, searchcharInverse), "0");
+                formula = formula.replace(MessageFormat.format("{1}{0}", searchchar, searchcharInverse), "0");
+                gateCount++;
+            }
+
+            // Identity rule
+            if (formula.contains(searchchar + " + " + "0") || formula.contains("0" + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + 0", searchchar), String.valueOf(searchchar));
+                formula = formula.replace(MessageFormat.format("0 + {0}", searchchar), "1");
+                gateCount++;
+            }
+
+            // Null element rule
+            if (formula.contains(searchchar + "1") || formula.contains("1" + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * 0", searchchar), "0");
+                formula = formula.replace(MessageFormat.format("0 * {0}", searchchar), "0");
+                gateCount++;
+            }
+
+            // Domination rule
+            if (formula.contains(searchchar + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + " * " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            // Idempotent rule
+            if (formula.contains(searchchar + " + " + searchchar + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {0} + {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + " * " + searchchar + " * " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * {0} * {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            // Distributive rule
+            for (int j = i + 1; j < binary.length; j++) {
+                char searchchar2 = (char) ('A' + j);
+                String searchchar2Inverse = String.valueOf('¬' + searchchar2);
+
+                if (formula.contains(searchchar + " * (" + searchchar2 + " + " + searchchar2Inverse + ")")) {
+                    formula = formula.replace(MessageFormat.format("{0} * ({1} + {2})", searchchar, searchchar2, searchchar2Inverse),
+                            MessageFormat.format("{0} * {1} + {0} * {2}", searchchar, searchchar2, searchchar2Inverse));
+                    gateCount+=2;
+                }
+
+                if (formula.contains("(" + searchchar + " + " + searchcharInverse + ") * " + searchchar2)) {
+                    formula = formula.replace(MessageFormat.format("({0} + {1}) * {2}", searchchar, searchcharInverse, searchchar2),
+                            MessageFormat.format("{0} * {2} + {1} * {2}", searchchar, searchcharInverse, searchchar2));
+                    gateCount+=2;
+                }
+            }
+
+            // De Morgan's law
+            if (formula.contains("(" + searchchar + " + " + searchcharInverse + ")'")) {
+                formula = formula.replace(MessageFormat.format("({0} + {1})'", searchchar, searchcharInverse),
+                        MessageFormat.format("{0}' * {1}'", searchchar, searchcharInverse));
+                gateCount+=2;
+            }
+
+            if (formula.contains("(" + searchchar + " * " + searchcharInverse + ")'")) {
+                formula = formula.replace(MessageFormat.format("({0} * {1})'", searchchar, searchcharInverse),
+                        MessageFormat.format("{0}' + {1}'", searchchar, searchcharInverse));
+                gateCount+=2;
+            }
+
+        }
+        formula += " Gate count: " + gateCount;
+        return formula;
+    }
+
     public ValueSet getCombinedImplicant(ValueSet valueSet) {
         int dif = 0;
         int idx = 0;
@@ -207,127 +317,6 @@ public class ValueSet implements Comparable<ValueSet> {
             case '1' -> f = '?';
             case '?' -> f = '0';
         }
-    }
-
-    public void displaySimplifiedLogicSchema() {
-        GateType gateType = getGateType();
-        int gateCount = getGateCount();
-        String logicExpression = getLogicExpression();
-
-        LogicHelper.displaySimplifiedLogicSchema(gateType, gateCount, logicExpression);
-    }
-
-    public String generateLogicSchema() {
-        return getLogicExpression();
-    }
-
-    public int countGates() {
-        return getGateCount();
-    }
-
-    public void displayUnsimplifiedLogicSchema() {
-        System.out.println("Unsimplified Logic Schema:");
-        System.out.println("Gate Type: AND");
-        System.out.println("Gate Count: " + linkedImplicants.size());
-        System.out.println("Logic Expression: " + getLogicExpression());
-    }
-
-    public void displaySimplifiedLogicSchemaByGates() {
-        GateType gateType = getGateType();
-        int gateCount = getGateCount();
-        String logicExpression = getLogicExpression();
-
-        LogicHelper.displaySimplifiedLogicSchemaByGates(gateType, gateCount, logicExpression);
-    }
-
-    public String generateLogicSchemaByGates() {
-        return getLogicExpression();
-    }
-
-    public int countGatesByType(GateType gateType) {
-        int gateCount = getGateCount();
-
-        if (getGateType() == gateType) {
-            return gateCount;
-        } else {
-            return 0;
-        }
-    }
-
-    private GateType getGateType() {
-        if (linkedImplicants.isEmpty()) {
-            return GateType.NAND;
-        } else if (linkedImplicants.size() == 1) {
-            return GateType.XOR;
-        } else {
-            return GateType.NOR;
-        }
-    }
-
-    private int getGateCount() {
-        int implicantCount = linkedImplicants.size();
-        int gateCount;
-
-        if (implicantCount == 0) {
-            gateCount = linkedImplicants.size() + 1; // NAND gate count
-        } else if (implicantCount == 1) {
-            gateCount = linkedImplicants.size() + 1; // XOR gate count
-        } else {
-            gateCount = implicantCount + 1; // NOR gate count
-        }
-
-        return gateCount;
-    }
-
-    private String getLogicExpression() {
-        StringBuilder logicExpression = new StringBuilder();
-
-        if (linkedImplicants.isEmpty()) {
-            logicExpression.append("NAND(");
-        } else if (linkedImplicants.size() == 1) {
-            logicExpression.append("XOR(");
-        } else {
-            logicExpression.append("NOR(");
-        }
-
-        for (int i = 0; i < linkedImplicants.size(); i++) {
-            logicExpression.append(linkedImplicants.get(i));
-            if (i != linkedImplicants.size() - 1) {
-                logicExpression.append(",");
-            }
-        }
-
-        logicExpression.append(")");
-
-        return logicExpression.toString();
-    }
-
-    public void printValueSetMethods(ValueSet valueSet) {
-        // 1) Display simplified logic schema
-        displaySimplifiedLogicSchema();
-
-        // 2) Display unsimplified logic schema
-        displayUnsimplifiedLogicSchema();
-
-        // 3) Display simplified logic schema by gates
-        displaySimplifiedLogicSchemaByGates();
-
-        // 4) Generate simplified logic schema
-        String simplifiedLogicSchema = generateLogicSchema();
-        System.out.println("Generated Simplified Logic Schema: " + simplifiedLogicSchema);
-
-        // 5) Count gates
-        int gateCount = countGates();
-        System.out.println("Gate Count: " + gateCount);
-
-        // 6) Generate simplified logic schema by gates
-        String simplifiedLogicSchemaByGates = generateLogicSchemaByGates();
-        System.out.println("Generated Simplified Logic Schema by Gates: " + simplifiedLogicSchemaByGates);
-
-        // 7) Count gates by type
-        GateType gateType = GateType.NAND; // Replace with desired gate type
-        int gateCountByType = countGatesByType(gateType);
-        System.out.println("Gate Count for Gate Type " + gateType + ": " + gateCountByType);
     }
 
     @Override

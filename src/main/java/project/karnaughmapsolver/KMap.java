@@ -1,7 +1,5 @@
 package project.karnaughmapsolver;
 
-import project.karnaughmapsolver.LogicHelper.GateType;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -353,34 +351,6 @@ public class KMap {
             }
         }
         return false;
-    }
-
-    public void printValueSetMethods(ValueSet valueSet) {
-        // 1) Display simplified logic schema
-        valueSet.displaySimplifiedLogicSchema();
-
-        // 2) Display unsimplified logic schema
-        valueSet.displayUnsimplifiedLogicSchema();
-
-        // 3) Display simplified logic schema by gates
-        valueSet.displaySimplifiedLogicSchemaByGates();
-
-        // 4) Generate simplified logic schema
-        String simplifiedLogicSchema = valueSet.generateLogicSchema();
-        System.out.println("Generated Simplified Logic Schema: " + simplifiedLogicSchema);
-
-        // 5) Count gates
-        int gateCount = valueSet.countGates();
-        System.out.println("Gate Count: " + gateCount);
-
-        // 6) Generate simplified logic schema by gates
-        String simplifiedLogicSchemaByGates = valueSet.generateLogicSchemaByGates();
-        System.out.println("Generated Simplified Logic Schema by Gates: " + simplifiedLogicSchemaByGates);
-
-        // 7) Count gates by type
-        GateType gateType = GateType.NAND; // Replace with desired gate type
-        int gateCountByType = valueSet.countGatesByType(gateType);
-        System.out.println("Gate Count for Gate Type " + gateType + ": " + gateCountByType);
     }
 
     // for testing

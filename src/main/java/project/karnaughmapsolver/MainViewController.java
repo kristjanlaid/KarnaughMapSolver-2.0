@@ -1,6 +1,5 @@
 package project.karnaughmapsolver;
 
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -144,7 +143,7 @@ public class MainViewController implements Initializable {
     }
 
     private void initMenuItems() {
-        variablesChoiceBox.getItems().addAll(2, 3, 4, 5, 6, 7);
+        variablesChoiceBox.getItems().addAll(2, 3, 4, 5, 6);
         variablesChoiceBox.setOnAction(event -> {
             variableChange();
             if (variablesChoiceBox.getValue() > 5) {
@@ -596,11 +595,50 @@ public class MainViewController implements Initializable {
             solutionTextPOS.getChildren().add(new Text("1"));
         }
 
-        ObservableList<ValueSet> sets = truthTable.getItems();
+        solutionTextSOP.getChildren().add(new Text("\n\nSimplified SOP function: \n"));
+        int gateCount = 0;
+        for (int i = 0; i < kMap.getMinimalCoverSOP().size(); i++) {
+            ValueSet valueSet = kMap.getPrimeImplicantsSOP().get(i);
+            String formula = valueSet.getSimplifiedSOPFormula();
+            int startIndex = formula.indexOf("Gate");
+            if (startIndex != -1) {
+                String removedString = formula.substring(startIndex);
+                formula = formula.replace(removedString, "");
 
-        for (ValueSet set : sets) {
-            kMap.printValueSetMethods(set);
+                // Parse the integer from the removed string
+                String integerString = removedString.replaceAll("\\D", "");
+                int parsedInt = Integer.parseInt(integerString);
+                gateCount += parsedInt;
+            }
+            Text text = new Text(formula);
+            bindTextWithValueSet(text, valueSet);
+            Text sign = new Text((i == kMap.getMinimalCoverSOP().size() - 1) ? "" : " + ");
+            solutionTextSOP.getChildren().addAll(text, sign);
         }
+        solutionTextSOP.getChildren().add(new Text(" Gatecount: " + gateCount));
+
+        solutionTextPOS.getChildren().add(new Text("\n\nSimplified POS function: \n"));
+        int gateCountPOS = 0;
+        for (int i = 0; i < kMap.getMinimalCoverPOS().size(); i++) {
+            ValueSet valueSet = kMap.getPrimeImplicantsPOS().get(i);
+            String formula = valueSet.getSimplifiedPOSFormula();
+            int startIndex = formula.indexOf("Gate");
+            if (startIndex != -1) {
+                String removedString = formula.substring(startIndex);
+                formula = formula.replace(removedString, "");
+
+                // Parse the integer from the removed string
+                String integerString = removedString.replaceAll("\\D", "");
+                int parsedInt = Integer.parseInt(integerString);
+                gateCountPOS += parsedInt;
+            }
+            Text text = new Text(formula);
+            bindTextWithValueSet(text, valueSet);
+            Text sign = new Text((i == kMap.getMinimalCoverPOS().size() - 1) ? "" : " + ");
+            solutionTextPOS.getChildren().addAll(text, sign);
+        }
+        solutionTextPOS.getChildren().add(new Text(" Gatecount: " + gateCountPOS));
+
 
         updateCanvas();
     }
