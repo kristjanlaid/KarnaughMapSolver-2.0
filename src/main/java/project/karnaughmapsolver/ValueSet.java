@@ -119,13 +119,16 @@ public class ValueSet implements Comparable<ValueSet> {
 
     public String getFormulaSOP() {
         StringBuilder sb = new StringBuilder();
+        int gateCount = 0;
 
         for (int i = 0; i < binary.length; i++) {
             if (binary[i] == '0') {
                 sb.append('¬');
                 sb.append((char) ('A' + i));
+                gateCount+=2;
             } else if (binary[i] == '1') {
                 sb.append((char) ('A' + i));
+                gateCount++;
             }
         }
 
@@ -133,21 +136,28 @@ public class ValueSet implements Comparable<ValueSet> {
             sb.append(1);
         }
 
+        sb.append(" ");
+        sb.append(gateCount);
+
+
         return sb.toString();
     }
 
     public String getFormulaPOS() {
         StringBuilder sb = new StringBuilder();
+        int gateCount = 0;
 
         sb.append("(");
         for (int i = 0; i < binary.length; i++) {
             if (binary[i] == '0') {
                 sb.append((char) ('A' + i));
                 sb.append("+");
+                gateCount++;
             } else if (binary[i] == '1') {
                 sb.append('¬');
                 sb.append((char) ('A' + i));
                 sb.append("+");
+                gateCount++;
             }
         }
         sb.deleteCharAt(sb.length() - 1);
@@ -157,7 +167,8 @@ public class ValueSet implements Comparable<ValueSet> {
             return sb.toString();
         }
 
-        sb.append(")");
+        sb.append(") ");
+        sb.append(gateCount);
 
         return sb.toString();
     }
@@ -166,7 +177,7 @@ public class ValueSet implements Comparable<ValueSet> {
         String formula = getFormulaSOP();
 
         // Apply boolean algebra reduction to simplify the formula
-        formula = applyBooleanAlgebraReduction(formula);
+        formula = applyBooleanAlgebraReduction(formula, null);
 
         return formula;
     }
@@ -175,13 +186,12 @@ public class ValueSet implements Comparable<ValueSet> {
         String formula = getFormulaPOS();
 
         // Apply boolean algebra reduction to simplify the formula
-        formula = applyBooleanAlgebraReduction(formula);
+        formula = applyBooleanAlgebraReduction(formula, null);
 
         return formula;
     }
 
-    private String applyBooleanAlgebraReduction(String formula) {
-
+    private String applyBooleanAlgebraReduction(String formula, String gateType) {
         int gateCount = 0;
 
         for (int i = 0; i < binary.length; i++) {
@@ -245,13 +255,13 @@ public class ValueSet implements Comparable<ValueSet> {
                 if (formula.contains(searchchar + " * (" + searchchar2 + " + " + searchchar2Inverse + ")")) {
                     formula = formula.replace(MessageFormat.format("{0} * ({1} + {2})", searchchar, searchchar2, searchchar2Inverse),
                             MessageFormat.format("{0} * {1} + {0} * {2}", searchchar, searchchar2, searchchar2Inverse));
-                    gateCount+=2;
+                    gateCount += 2;
                 }
 
                 if (formula.contains("(" + searchchar + " + " + searchcharInverse + ") * " + searchchar2)) {
                     formula = formula.replace(MessageFormat.format("({0} + {1}) * {2}", searchchar, searchcharInverse, searchchar2),
                             MessageFormat.format("{0} * {2} + {1} * {2}", searchchar, searchcharInverse, searchchar2));
-                    gateCount+=2;
+                    gateCount += 2;
                 }
             }
 
@@ -259,17 +269,63 @@ public class ValueSet implements Comparable<ValueSet> {
             if (formula.contains("(" + searchchar + " + " + searchcharInverse + ")'")) {
                 formula = formula.replace(MessageFormat.format("({0} + {1})'", searchchar, searchcharInverse),
                         MessageFormat.format("{0}' * {1}'", searchchar, searchcharInverse));
-                gateCount+=2;
+                gateCount += 2;
             }
 
             if (formula.contains("(" + searchchar + " * " + searchcharInverse + ")'")) {
                 formula = formula.replace(MessageFormat.format("({0} * {1})'", searchchar, searchcharInverse),
                         MessageFormat.format("{0}' + {1}'", searchchar, searchcharInverse));
-                gateCount+=2;
+                gateCount += 2;
             }
 
         }
-        formula += " Gate count: " + gateCount;
+        if (gateType != null) {
+            switch (gateType) {
+                case "NAND" -> formula = replaceGatesWithNANDs(formula);
+                case "XOR" -> formula = replaceGatesWithXORs(formula);
+                case "NOR" -> formula = replaceGatesWithNORs(formula);
+            }
+        }
+        return formula;
+    }
+
+    private String replaceGatesWithNANDs(String formula) {
+        formula = formula.replace('+', '⊼');
+        formula = formula.replace('*', '+');
+        formula = formula.replace('⊼', '*');
+
+        return formula;
+    }
+
+    private String replaceGatesWithXORs(String formula) {
+        formula = formula.replace('+', '⊕');
+        formula = formula.replace('*', '+');
+        formula = formula.replace('⊕', '*');
+
+        return formula;
+    }
+
+    private String replaceGatesWithNORs(String formula) {
+        formula = formula.replace('*', '↓');
+
+        return formula;
+    }
+
+    public String getSimplifiedPOSFormulaWithGates(String gateType) {
+        String formula = getFormulaPOS();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula, gateType);
+
+        return formula;
+    }
+
+    public String getSimplifiedSOPFormulaWithGates(String gateType) {
+        String formula = getFormulaSOP();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula, gateType);
+
         return formula;
     }
 
