@@ -13,6 +13,8 @@ public class KMap {
 
     public KMap(List<ValueSet> valueSets, int var) {
         values = getMap(var);
+        primeImplicantsSOP = new ArrayList<>();
+        primeImplicantsPOS = new ArrayList<>();
 
         for (int x = 0; x < sizeX(); x++) {
             for (int y = 0; y < sizeY(); y++) {
@@ -94,8 +96,6 @@ public class KMap {
 
 
     public void findImplicants() {
-        primeImplicantsSOP = new ArrayList<>();
-        primeImplicantsPOS = new ArrayList<>();
         minimalCoverSOP = new ArrayList<>();
         minimalCoverPOS = new ArrayList<>();
         resetValueSets();
@@ -150,7 +150,7 @@ public class KMap {
     }
 
 
-    private List<ValueSet> getTerms(char requiredValue, boolean includeDoNotCare) {
+    public List<ValueSet> getTerms(char requiredValue, boolean includeDoNotCare) {
         List<ValueSet> valueSets = new ArrayList<>();
 
         for (int x = 0; x < sizeX(); x++) {

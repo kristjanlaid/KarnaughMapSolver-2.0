@@ -2,14 +2,10 @@ package project.karnaughmapsolver;
 
 import javafx.geometry.Point3D;
 import javafx.scene.*;
-import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
@@ -18,13 +14,14 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CubeModelBuilder {
-    private Group sceneRoot;
-    private PerspectiveCamera perspectiveCamera;
-    private int numberOfVariables;
-    private KMap kMap;
+    private final Group sceneRoot;
+    private final PerspectiveCamera perspectiveCamera;
+    private final int numberOfVariables;
+    private final KMap kMap;
     private Group meshGroup;
     private Rotate rotateX;
     private Rotate rotateY;
+    private final String type;
 
     public static final float X_RED     = 0.5f / 7f;
     public static final float X_GREEN   = 1.5f / 7f;
@@ -40,11 +37,12 @@ public class CubeModelBuilder {
     private double mouseOldY;
 
 
-    public CubeModelBuilder(Group sceneRoot, PerspectiveCamera perspectiveCamera, int numberOfVariables, KMap kMap) {
+    public CubeModelBuilder(Group sceneRoot, PerspectiveCamera perspectiveCamera, int numberOfVariables, KMap kMap, String type) {
         this.sceneRoot = sceneRoot;
         this.perspectiveCamera = perspectiveCamera;
         this.numberOfVariables = numberOfVariables;
         this.kMap = kMap;
+        this.type = type;
     }
 
     public List<int[]> createPatternFaceList(int numberOfVariables) {
@@ -88,6 +86,9 @@ public class CubeModelBuilder {
         return patternFaces;
     }
 
+    // Create Hashmap where keys are the coordinates of Kaurnaugh map
+    // (For example [3,3,1] is the key of the last element in the Karnaugh map with 5 variables)
+    // And Values are Points that correspond to the following cell in the 3D model, so coordinates for the Cube
     public HashMap<List<Integer>, Point3D> createPointList(int numberOfVariables) {
         int[] dimensions = new int[3];
         if (numberOfVariables == 5) {
@@ -136,6 +137,7 @@ public class CubeModelBuilder {
 
     }
 
+    // Create on small cube that represents one cell in the Karnaugh Map
     private TriangleMesh createCube(int[] face) {
         TriangleMesh m = new TriangleMesh();
         // POINTS
@@ -185,6 +187,7 @@ public class CubeModelBuilder {
         return m;
     }
 
+    // Creates SubScene for the 3D model
     public SubScene createScene() {
         SubScene subScene = new SubScene(sceneRoot, 450, 450, true, SceneAntialiasing.BALANCED);
         perspectiveCamera.setNearClip(0.5);
@@ -196,15 +199,6 @@ public class CubeModelBuilder {
         meshGroup = new Group();
         HashMap<List<Integer>, Point3D> facePoints = createPointList(numberOfVariables);
         List<int[]> patternFaces = createPatternFaceList(numberOfVariables);
-
-//        patternFaceF.forEach(p -> {
-//            MeshView meshP = new MeshView();
-//            meshP.setMesh(createCube(p));
-//            meshP.setMaterial(mat);
-//            Point3D pt = pointsFaceF.get(cont.getAndIncrement());
-//            meshP.getTransforms().addAll(new Translate(pt.getX(), pt.getY(), pt.getZ()));
-//            meshGroup.getChildren().add(meshP);
-//        });
 
         for (int[] p : patternFaces) {
             MeshView meshP = new MeshView(createCube(p));
@@ -282,6 +276,44 @@ public class CubeModelBuilder {
             if (keyMapValues.isClicked()) {
                 mat.setDiffuseColor(Color.BLUE);
             }
+            meshView.setMaterial(mat);
+        }
+    }
+
+    public void highLightValues(ValueSet valueSet) {
+        HashMap<List<Integer>, Point3D> facePoints = createPointList(numberOfVariables);
+        List<ValueSet> result = new ArrayList<>();
+        List<MeshView> meshViews = new ArrayList<>();
+
+        List<ValueSet> implicantss = (type.equals("SOP")) ? kMap.getPrimeImplicantsSOP() : kMap.getPrimeImplicantsPOS();
+
+        for (ValueSet implicant : implicantss) {
+            if (implicant.contains(valueSet)) {
+                result.add(implicant);
+            }
+        }
+
+        for (int i = 0; i < meshGroup.getChildren().size(); i++) {
+            MeshView meshView = (MeshView) meshGroup.getChildren().get(i);
+            Transform meshTransform = meshView.getTransforms().get(0);
+            Point3D point3D = new Point3D(meshTransform.getTx(), meshTransform.getTy(), meshTransform.getTz());
+            List<List<Integer>> resultList = facePoints.entrySet().stream()
+                    .filter(entry -> Objects.equals(entry.getValue(), point3D))
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+            List<Integer> keyMapCoords = resultList.get(0);
+            ValueSet keyMapValues = kMap.getValue(keyMapCoords.get(0), keyMapCoords.get(1), keyMapCoords.get(2));
+
+            for (ValueSet set : result) {
+                if (set.contains(keyMapValues)) {
+                    meshViews.add(meshView);
+                }
+            }
+        }
+
+        for (MeshView meshView : meshViews) {
+            PhongMaterial mat = new PhongMaterial();
+            mat.setDiffuseColor(Color.web(valueSet.getColor(), 1));
             meshView.setMaterial(mat);
         }
     }

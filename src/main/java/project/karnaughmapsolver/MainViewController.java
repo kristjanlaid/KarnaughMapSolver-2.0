@@ -172,9 +172,7 @@ public class MainViewController implements Initializable {
         showOnlyRelevant.setOnAction(event -> updateCanvas());
         show3D.setOnAction(event -> {
             updateCanvas();
-            if (show3D.isSelected()) {
-                System.out.println("IGNORE FOR NOW");
-            } else {
+            if (!show3D.isSelected()) {
                 SOPParent.getChildren().remove(1);
                 POSParent.getChildren().remove(1);
             }
@@ -419,14 +417,14 @@ public class MainViewController implements Initializable {
             PerspectiveCamera perspectiveCameraSOP = new PerspectiveCamera(true);
             PerspectiveCamera perspectiveCameraPOS = new PerspectiveCamera(true);
 
-            cubeModelBuilderSOP = new CubeModelBuilder(groupSOP, perspectiveCameraSOP, numberOfVariables, kMap);
+            cubeModelBuilderSOP = new CubeModelBuilder(groupSOP, perspectiveCameraSOP, numberOfVariables, kMap, "SOP");
             SubScene subSceneSOP = cubeModelBuilderSOP.createScene();
 
-            cubeModelBuilderPOS = new CubeModelBuilder(groupPOS, perspectiveCameraPOS, numberOfVariables, kMap);
+            cubeModelBuilderPOS = new CubeModelBuilder(groupPOS, perspectiveCameraPOS, numberOfVariables, kMap, "POS");
             SubScene subScenePOS = cubeModelBuilderPOS.createScene();
 
-            canvasSOP.visibleProperty().bind(show3D.selectedProperty().not());
-            canvasPOS.visibleProperty().bind(show3D.selectedProperty().not());
+            // canvasSOP.visibleProperty().bind(show3D.selectedProperty().not());
+            // canvasPOS.visibleProperty().bind(show3D.selectedProperty().not());
             SOPParent.getChildren().add(subSceneSOP);
             POSParent.getChildren().add(subScenePOS);
 
@@ -444,9 +442,7 @@ public class MainViewController implements Initializable {
 
             for (int z = kMap.sizeZ() - 1; z >= 0; z--) {
 
-                if (show3D.isSelected()) {
-                    System.out.println("IGNORE FOR NOW");
-                } else {
+                if (!show3D.isSelected()) {
                     context.setStroke(Color.web("444444"));
                     context.setFill(Color.web("444444"));
 
@@ -574,13 +570,6 @@ public class MainViewController implements Initializable {
         return valueSets;
     }
 
-    private Color getColor(int multiplier, double val) {
-        int hex = (int) (0x44 + multiplier * val * 20);
-        String color = Integer.toHexString(hex).repeat(3);
-        double opacity = 1 - multiplier * val * 0.02;
-        return Color.web(color, opacity);
-    }
-
     private void solve() {
         kMap.findImplicants();
 
@@ -686,7 +675,12 @@ public class MainViewController implements Initializable {
 
         text.setOnMousePressed(event -> {
             valueSet.setHighlighted(true);
-            updateCanvas();
+            if (show3D.isSelected()) {
+                cubeModelBuilderSOP.highLightValues(valueSet);
+                cubeModelBuilderPOS.highLightValues(valueSet);
+            } else {
+                updateCanvas();
+            }
         });
         text.setOnMouseReleased(event -> {
             valueSet.setHighlighted(false);
