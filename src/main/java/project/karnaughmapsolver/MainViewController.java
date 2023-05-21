@@ -1,5 +1,6 @@
 package project.karnaughmapsolver;
 
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
@@ -133,7 +134,7 @@ public class MainViewController implements Initializable {
     private void initTruthTable() {
         truthTable.setOnMouseClicked(event -> {
             ValueSet focusedItem = truthTable.getFocusModel().getFocusedItem();
-            if (focusedItem != null && truthTable.getFocusModel().getFocusedCell().getColumn() == variablesChoiceBox.getValue()) {
+            if (focusedItem != null && truthTable.getFocusModel().getFocusedCell().getColumn() == variablesChoiceBox.getValue() + 1) {
                 focusedItem.rotateF();
                 updateKMap();
                 updateCanvas();
@@ -315,8 +316,6 @@ public class MainViewController implements Initializable {
         truthTable.getItems().clear();
         truthTable.getColumns().clear();
 
-        truthTable.isTableMenuButtonVisible();
-
         // Add index column
         TableColumn<ValueSet, Integer> indexColumn = new TableColumn<>("i");
         indexColumn.setCellValueFactory(new PropertyValueFactory<>("index"));
@@ -324,9 +323,6 @@ public class MainViewController implements Initializable {
         indexColumn.setResizable(false);
         indexColumn.setStyle("-fx-font-weight: bold;-fx-font-size: 10px;");
         truthTable.getColumns().add(indexColumn);
-        for (int i = 0; i < numberOfRows; i++) {
-
-        }
 
         // Add colums according to number of variables
         for (int i = 0; i < numberOfVariables; i++) {
@@ -335,7 +331,6 @@ public class MainViewController implements Initializable {
             column.setPrefWidth(20);
             column.setSortable(false);
             column.setResizable(false);
-            column.isEditable();
             truthTable.getColumns().add(column);
         }
         TableColumn<ValueSet, String> column = new TableColumn<>("y");
@@ -383,7 +378,7 @@ public class MainViewController implements Initializable {
             }
             ValueSet valueSet = new ValueSet(i, numberOfVariables, initValue, idx);
             truthTable.getItems().add(valueSet);
-            idx += 1;
+            idx++;
         }
 
         truthTable.refresh();
@@ -466,8 +461,6 @@ public class MainViewController implements Initializable {
                                  "1010", "1011", "1001", "1000"}};
 
         int charIndex = 0;
-
-        System.out.println(letters);
 
         //z axle
         int limZ = (show3D.isSelected() && variables > 4) ? ((variables > 5) ? 4 : 2) : 0;
@@ -601,6 +594,12 @@ public class MainViewController implements Initializable {
         }
         if (kMap.getMinimalCoverPOS().size() == 0) {
             solutionTextPOS.getChildren().add(new Text("1"));
+        }
+
+        ObservableList<ValueSet> sets = truthTable.getItems();
+
+        for (ValueSet set : sets) {
+            kMap.printValueSetMethods(set);
         }
 
         updateCanvas();
