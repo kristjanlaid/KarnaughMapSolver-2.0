@@ -24,7 +24,7 @@ public class App extends Application {
         double screenHeight = screenBounds.getHeight();
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("main-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), screenWidth, screenHeight);
+        Scene scene = new Scene(fxmlLoader.load(), screenWidth - 100, screenHeight - 100);
         scene.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 
         primaryStage.setTitle("Karnaugh Map Solver");
@@ -32,7 +32,7 @@ public class App extends Application {
         primaryStage.setScene(scene);
         primaryStage.maxWidthProperty().bind(primaryStage.widthProperty());
         primaryStage.minWidthProperty().bind(primaryStage.widthProperty());
-        primaryStage.setMinHeight(670);
+        primaryStage.setMinHeight(870);
         primaryStage.show();
     }
 }

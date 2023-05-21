@@ -2,10 +2,12 @@ package project.karnaughmapsolver;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -34,9 +36,9 @@ public class MainViewController implements Initializable {
     @FXML
     private Slider focusSlider;
     @FXML
-    private GridPane extraSettings;
+    public GridPane extraSettings;
     @FXML
-    private CheckBox show3D;
+    public CheckBox show3D;
     @FXML
     private MenuItem empty;
     @FXML
@@ -58,9 +60,13 @@ public class MainViewController implements Initializable {
     @FXML
     private RadioMenuItem initRandom;
     @FXML
-    private Canvas canvasPOS;
+    public AnchorPane SOPParent;
     @FXML
-    private Canvas canvasSOP;
+    public AnchorPane POSParent;
+    @FXML
+    public Canvas canvasPOS;
+    @FXML
+    public Canvas canvasSOP;
     @FXML
     private TextFlow solutionTextPOS;
     @FXML
@@ -68,6 +74,8 @@ public class MainViewController implements Initializable {
     @FXML
     private Button inputButton;
 
+    private CubeModelBuilder cubeModelBuilderSOP;
+    private CubeModelBuilder cubeModelBuilderPOS;
 
     @FXML
     private void allSetZeroClicked() {
@@ -156,6 +164,12 @@ public class MainViewController implements Initializable {
         showOnlyRelevant.setOnAction(event -> updateCanvas());
         show3D.setOnAction(event -> {
             updateCanvas();
+            if (show3D.isSelected()) {
+                System.out.println("IGNORE FOR NOW");
+            } else {
+                SOPParent.getChildren().remove(1);
+                POSParent.getChildren().remove(1);
+            }
             extraSettings.setDisable(!show3D.isSelected());
         });
         exit.setOnAction(event -> System.exit(0));
@@ -383,9 +397,34 @@ public class MainViewController implements Initializable {
         truthTable.refresh();
     }
 
-    private void updateCanvas() {
+    public void updateCanvas() {
         if (truthTable.getItems().isEmpty()) {
             return;
+        }
+
+        if (show3D.isSelected() && SOPParent.getChildren().size() <= 1 && POSParent.getChildren().size() <= 1) {
+            int numberOfVariables = variablesChoiceBox.getValue();
+
+            Group groupSOP = new Group();
+            Group groupPOS = new Group();
+
+            PerspectiveCamera perspectiveCameraSOP = new PerspectiveCamera(true);
+            PerspectiveCamera perspectiveCameraPOS = new PerspectiveCamera(true);
+
+            cubeModelBuilderSOP = new CubeModelBuilder(groupSOP, perspectiveCameraSOP, numberOfVariables, kMap);
+            SubScene subSceneSOP = cubeModelBuilderSOP.createScene();
+
+            cubeModelBuilderPOS = new CubeModelBuilder(groupPOS, perspectiveCameraPOS, numberOfVariables, kMap);
+            SubScene subScenePOS = cubeModelBuilderPOS.createScene();
+
+            canvasSOP.visibleProperty().bind(show3D.selectedProperty().not());
+            canvasPOS.visibleProperty().bind(show3D.selectedProperty().not());
+            SOPParent.getChildren().add(subSceneSOP);
+            POSParent.getChildren().add(subScenePOS);
+
+        } else if (show3D.isSelected() && SOPParent.getChildren().size() >= 2 && POSParent.getChildren().size() >= 2) {
+            cubeModelBuilderSOP.refreshCubeValues();
+            cubeModelBuilderPOS.refreshCubeValues();
         }
 
         GraphicsContext[] graphicsContexts = {canvasPOS.getGraphicsContext2D(), canvasSOP.getGraphicsContext2D()};
@@ -398,16 +437,7 @@ public class MainViewController implements Initializable {
             for (int z = kMap.sizeZ() - 1; z >= 0; z--) {
 
                 if (show3D.isSelected()) {
-                    int dif = (int) Math.abs(Math.round(focusSlider.getValue()) - z);
-                    context.setStroke(getColor(dif, cellOpacitySlider.getValue()));
-                    context.setFill(getColor(dif, textOpacitySlider.getValue()));
-                    int offset = (int) (spacingSlider.getValue() * z);
-
-                    for (int x = 0; x < kMap.sizeX(); x++) {
-                        for (int y = 0; y < kMap.sizeY(); y++) {
-                            drawElement(x, y, offset, offset, rectSize, kMap.getValue(x, y, z), context);
-                        }
-                    }
+                    System.out.println("IGNORE FOR NOW");
                 } else {
                     context.setStroke(Color.web("444444"));
                     context.setFill(Color.web("444444"));
