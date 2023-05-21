@@ -1,5 +1,6 @@
 package project.karnaughmapsolver;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +24,6 @@ public class ValueSet implements Comparable<ValueSet> {
     public ValueSet(ValueSet valueSet) {
         this.binary = valueSet.getBinary().clone();
         this.f = valueSet.getF();
-        this.index = valueSet.getIndex();
     }
 
     public char[] getBinary() {
@@ -160,6 +160,117 @@ public class ValueSet implements Comparable<ValueSet> {
         sb.append(")");
 
         return sb.toString();
+    }
+
+    public String getSimplifiedSOPFormula() {
+        String formula = getFormulaSOP();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula);
+
+        return formula;
+    }
+
+    public String getSimplifiedPOSFormula() {
+        String formula = getFormulaPOS();
+
+        // Apply boolean algebra reduction to simplify the formula
+        formula = applyBooleanAlgebraReduction(formula);
+
+        return formula;
+    }
+
+    private String applyBooleanAlgebraReduction(String formula) {
+
+        int gateCount = 0;
+
+        for (int i = 0; i < binary.length; i++) {
+            char searchchar = (char) ('A' + i);
+            String searchcharInverse = String.valueOf('¬' + searchchar);
+
+            // Complementation rule
+            if (formula.contains(searchchar + " + " + searchcharInverse) || formula.contains(searchcharInverse + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {1}", searchchar, searchcharInverse), "1");
+                formula = formula.replace(MessageFormat.format("{1} + {0}", searchchar, searchcharInverse), "1");
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + "" + searchcharInverse) || formula.contains(searchcharInverse + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0}{1}", searchchar, searchcharInverse), "0");
+                formula = formula.replace(MessageFormat.format("{1}{0}", searchchar, searchcharInverse), "0");
+                gateCount++;
+            }
+
+            // Identity rule
+            if (formula.contains(searchchar + " + " + "0") || formula.contains("0" + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + 0", searchchar), String.valueOf(searchchar));
+                formula = formula.replace(MessageFormat.format("0 + {0}", searchchar), "1");
+                gateCount++;
+            }
+
+            // Null element rule
+            if (formula.contains(searchchar + "1") || formula.contains("1" + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * 0", searchchar), "0");
+                formula = formula.replace(MessageFormat.format("0 * {0}", searchchar), "0");
+                gateCount++;
+            }
+
+            // Domination rule
+            if (formula.contains(searchchar + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + " * " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            // Idempotent rule
+            if (formula.contains(searchchar + " + " + searchchar + " + " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} + {0} + {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            if (formula.contains(searchchar + " * " + searchchar + " * " + searchchar)) {
+                formula = formula.replace(MessageFormat.format("{0} * {0} * {0}", searchchar), String.valueOf(searchchar));
+                gateCount++;
+            }
+
+            // Distributive rule
+            for (int j = i + 1; j < binary.length; j++) {
+                char searchchar2 = (char) ('A' + j);
+                String searchchar2Inverse = String.valueOf('¬' + searchchar2);
+
+                if (formula.contains(searchchar + " * (" + searchchar2 + " + " + searchchar2Inverse + ")")) {
+                    formula = formula.replace(MessageFormat.format("{0} * ({1} + {2})", searchchar, searchchar2, searchchar2Inverse),
+                            MessageFormat.format("{0} * {1} + {0} * {2}", searchchar, searchchar2, searchchar2Inverse));
+                    gateCount+=2;
+                }
+
+                if (formula.contains("(" + searchchar + " + " + searchcharInverse + ") * " + searchchar2)) {
+                    formula = formula.replace(MessageFormat.format("({0} + {1}) * {2}", searchchar, searchcharInverse, searchchar2),
+                            MessageFormat.format("{0} * {2} + {1} * {2}", searchchar, searchcharInverse, searchchar2));
+                    gateCount+=2;
+                }
+            }
+
+            // De Morgan's law
+            if (formula.contains("(" + searchchar + " + " + searchcharInverse + ")'")) {
+                formula = formula.replace(MessageFormat.format("({0} + {1})'", searchchar, searchcharInverse),
+                        MessageFormat.format("{0}' * {1}'", searchchar, searchcharInverse));
+                gateCount+=2;
+            }
+
+            if (formula.contains("(" + searchchar + " * " + searchcharInverse + ")'")) {
+                formula = formula.replace(MessageFormat.format("({0} * {1})'", searchchar, searchcharInverse),
+                        MessageFormat.format("{0}' + {1}'", searchchar, searchcharInverse));
+                gateCount+=2;
+            }
+
+        }
+        formula += " Gate count: " + gateCount;
+        return formula;
     }
 
     public ValueSet getCombinedImplicant(ValueSet valueSet) {
