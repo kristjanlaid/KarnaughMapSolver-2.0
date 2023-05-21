@@ -2,10 +2,14 @@ package project.karnaughmapsolver;
 
 import javafx.geometry.Point3D;
 import javafx.scene.*;
+import javafx.scene.control.Tooltip;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
 import javafx.scene.shape.TriangleMesh;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
@@ -19,6 +23,8 @@ public class CubeModelBuilder {
     private int numberOfVariables;
     private KMap kMap;
     private Group meshGroup;
+    private Rotate rotateX;
+    private Rotate rotateY;
 
     public static final float X_RED     = 0.5f / 7f;
     public static final float X_GREEN   = 1.5f / 7f;
@@ -180,7 +186,7 @@ public class CubeModelBuilder {
     }
 
     public SubScene createScene() {
-        SubScene subScene = new SubScene(sceneRoot, 350, 350, true, SceneAntialiasing.BALANCED);
+        SubScene subScene = new SubScene(sceneRoot, 450, 450, true, SceneAntialiasing.BALANCED);
         perspectiveCamera.setNearClip(0.5);
         perspectiveCamera.setFarClip(10000.0);
         perspectiveCamera.setTranslateZ(-25);
@@ -222,8 +228,8 @@ public class CubeModelBuilder {
             meshGroup.getChildren().add(meshP);
         }
 
-        Rotate rotateX = new Rotate(30, 0, 0, 0, Rotate.X_AXIS);
-        Rotate rotateY = new Rotate(20, 0, 0, 0, Rotate.Y_AXIS);
+        rotateX = new Rotate(0, 0, 0, 0, Rotate.X_AXIS);
+        rotateY = new Rotate(0, 0, 0, 0, Rotate.Y_AXIS);
         meshGroup.getTransforms().addAll(rotateX, rotateY);
 
         sceneRoot.getChildren().addAll(meshGroup, new AmbientLight(Color.WHITE));
@@ -242,6 +248,11 @@ public class CubeModelBuilder {
         });
 
         return subScene;
+    }
+
+    public void resetRotation() {
+        rotateX.setAngle(0);
+        rotateY.setAngle(0);
     }
 
     public void refreshCubeValues() {

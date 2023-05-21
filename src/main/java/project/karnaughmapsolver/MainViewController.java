@@ -108,6 +108,14 @@ public class MainViewController implements Initializable {
         solve();
     }
 
+    @FXML
+    private void reset3DModel(){
+        if (show3D.isSelected()){
+            cubeModelBuilderSOP.resetRotation();
+            cubeModelBuilderPOS.resetRotation();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMenuItems();
