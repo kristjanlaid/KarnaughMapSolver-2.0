@@ -1,34 +1,24 @@
 package project.karnaughmapsolver;
 
-import javafx.animation.RotateTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Group;
-import javafx.scene.PerspectiveCamera;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
-import javafx.scene.paint.PhongMaterial;
-import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.scene.transform.Rotate;
-import javafx.stage.Stage;
-import javafx.util.Duration;
-import javafx.scene.shape.Box;
 
 import java.net.URL;
 import java.util.*;
 
 public class MainViewController implements Initializable {
-
-    private KMap kMap;
 
     @FXML
     private TableView<ValueSet> truthTable;
@@ -43,9 +33,9 @@ public class MainViewController implements Initializable {
     @FXML
     private Slider focusSlider;
     @FXML
-    private GridPane extraSettings;
+    public GridPane extraSettings;
     @FXML
-    private CheckBox show3D;
+    public CheckBox show3D;
     @FXML
     private MenuItem empty;
     @FXML
@@ -67,14 +57,22 @@ public class MainViewController implements Initializable {
     @FXML
     private RadioMenuItem initRandom;
     @FXML
-    private Canvas canvasPOS;
+    public AnchorPane SOPParent;
     @FXML
-    private Canvas canvasSOP;
+    public AnchorPane POSParent;
+    @FXML
+    public Canvas canvasPOS;
+    @FXML
+    public Canvas canvasSOP;
     @FXML
     private TextFlow solutionTextPOS;
     @FXML
     private TextFlow solutionTextSOP;
 
+    private KMap kMap;
+
+    private CubeModelBuilder cubeModelBuilderSOP;
+    private CubeModelBuilder cubeModelBuilderPOS;
 
     @FXML
     private void allSetZeroClicked() {
@@ -163,6 +161,12 @@ public class MainViewController implements Initializable {
         showOnlyRelevant.setOnAction(event -> updateCanvas());
         show3D.setOnAction(event -> {
             updateCanvas();
+            if (show3D.isSelected()) {
+                System.out.println("IGNORE FOR NOW");
+            } else {
+                SOPParent.getChildren().remove(1);
+                POSParent.getChildren().remove(1);
+            }
             extraSettings.setDisable(!show3D.isSelected());
         });
         exit.setOnAction(event -> System.exit(0));
@@ -348,9 +352,34 @@ public class MainViewController implements Initializable {
         truthTable.refresh();
     }
 
-    private void updateCanvas() {
+    public void updateCanvas() {
         if (truthTable.getItems().isEmpty()) {
             return;
+        }
+
+        if (show3D.isSelected() && SOPParent.getChildren().size() <= 1 && POSParent.getChildren().size() <= 1) {
+            int numberOfVariables = variablesChoiceBox.getValue();
+
+            Group groupSOP = new Group();
+            Group groupPOS = new Group();
+
+            PerspectiveCamera perspectiveCameraSOP = new PerspectiveCamera(true);
+            PerspectiveCamera perspectiveCameraPOS = new PerspectiveCamera(true);
+
+            cubeModelBuilderSOP = new CubeModelBuilder(groupSOP, perspectiveCameraSOP, numberOfVariables, kMap);
+            SubScene subSceneSOP = cubeModelBuilderSOP.createScene();
+
+            cubeModelBuilderPOS = new CubeModelBuilder(groupPOS, perspectiveCameraPOS, numberOfVariables, kMap);
+            SubScene subScenePOS = cubeModelBuilderPOS.createScene();
+
+            canvasSOP.visibleProperty().bind(show3D.selectedProperty().not());
+            canvasPOS.visibleProperty().bind(show3D.selectedProperty().not());
+            SOPParent.getChildren().add(subSceneSOP);
+            POSParent.getChildren().add(subScenePOS);
+
+        } else if (show3D.isSelected() && SOPParent.getChildren().size() >= 2 && POSParent.getChildren().size() >= 2) {
+            cubeModelBuilderSOP.refreshCubeValues();
+            cubeModelBuilderPOS.refreshCubeValues();
         }
 
         GraphicsContext[] graphicsContexts = {canvasPOS.getGraphicsContext2D(), canvasSOP.getGraphicsContext2D()};
@@ -363,17 +392,7 @@ public class MainViewController implements Initializable {
             for (int z = kMap.sizeZ() - 1; z >= 0; z--) {
 
                 if (show3D.isSelected()) {
-                    int dif = (int) Math.abs(Math.round(focusSlider.getValue()) - z);
-                    context.setStroke(getColor(dif, cellOpacitySlider.getValue()));
-                    context.setFill(getColor(dif, textOpacitySlider.getValue()));
-                    int offset = (int) (spacingSlider.getValue() * z);
-
-                    for (int x = 0; x < kMap.sizeX(); x++) {
-                        for (int y = 0; y < kMap.sizeY(); y++) {
-                            drawElement(x, y, offset, offset, rectSize, kMap.getValue(x, y, z), context);
-                            drawCube(canvasSOP);
-                        }
-                    }
+                    System.out.println("IGNORE FOR NOW");
                 } else {
                     context.setStroke(Color.web("444444"));
                     context.setFill(Color.web("444444"));
@@ -404,47 +423,6 @@ public class MainViewController implements Initializable {
 
             drawHeaders(context, rectSize);
         }
-    }
-
-    private void drawCube(Canvas stage) {
-
-        Box box = createCube();
-        Group root = new Group(); //layout
-        root.getChildren().add(box);
-        
-        PerspectiveCamera camera = new PerspectiveCamera();
-        
-        Scene scene = new Scene(root, 850, 650); //show scene
-        scene.setCamera(camera);
-        
-    }
-
-    Box createCube(){
-        Box box = new Box();
-        box.setWidth(300); //x size
-        box.setHeight(300); // y size
-        box.setDepth(300);// z size
-        
-        box.setTranslateX(300);
-        box.setTranslateY(300);
-        box.setTranslateZ(0);
-        
-        PhongMaterial mat = new PhongMaterial();
-        mat.setSpecularColor(Color.BLACK);
-        mat.setDiffuseColor(Color.RED);
-        
-        box.setMaterial(mat);
-        
-        Rotate xRotation = new Rotate(25, Rotate.X_AXIS);
-        Rotate yRotation = new Rotate(25, Rotate.Y_AXIS);
-        box.getTransforms().addAll(xRotation, yRotation);
-        
-       RotateTransition rt = new RotateTransition(Duration.millis(1000), box);
-       rt.setAxis(Rotate.X_AXIS);
-       rt.setByAngle(360);
-       rt.setCycleCount(10);
-       rt.play();
-       return box;
     }
 
     private void drawHeaders(GraphicsContext context, int rectSize) {
