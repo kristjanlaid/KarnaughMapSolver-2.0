@@ -193,6 +193,10 @@ public class MainViewController implements Initializable {
         focusSlider.setOnMouseDragged(event -> updateCanvas());
         focusSlider.setOnMouseReleased(event -> updateCanvas());
 
+        Integer choice = variablesChoiceBox.getValue();
+
+        inputButton.setDisable(choice == null);
+
         empty.setOnAction(event -> {
             variablesChoiceBox.setOnAction(event1 -> {
             });
@@ -266,12 +270,38 @@ public class MainViewController implements Initializable {
             alert.setResizable(true);
             alert.showAndWait();
         });
+
+        inputButton.setOnAction(event -> {
+            TextInputDialog dialog = new TextInputDialog();
+            dialog.setTitle("Enter input names");
+            Label info = new Label("Input names must be inserted without spaces\nand as many variables you want,\none char counts as one variable.\nThe variable choice will be changed to\nhow many variables you enter.");
+            info.setWrapText(true);
+            dialog.getDialogPane().setHeader(info);
+
+            Optional<String> result = dialog.showAndWait();
+
+            result.ifPresent(string -> {
+                if (letters.length() == variablesChoiceBox.getValue()) {
+                    letters = string;
+                    variableChange();
+                } else if (string.length() == 0) {
+                    letters = "ABCDEFG";
+                } else {
+                    variablesChoiceBox.setValue(string.length());
+                    variableChange();
+                }
+
+            });
+        });
     }
 
     private void variableChange() {
         show3D.setDisable(variablesChoiceBox.getValue() < 5);
         extraSettings.setDisable(variablesChoiceBox.getValue() < 5 || !show3D.isSelected());
         focusSlider.setValue(0);
+
+        Integer choice = variablesChoiceBox.getValue();
+        inputButton.setDisable(choice == null);
 
         loadTruthTable();
         updateKMap();
@@ -416,8 +446,6 @@ public class MainViewController implements Initializable {
         }
     }
 
-
-
     private void drawHeaders(GraphicsContext context, int rectSize) {
         int variables = variablesChoiceBox.getValue();
         context.setFont(new Font(15));
@@ -438,6 +466,8 @@ public class MainViewController implements Initializable {
                                  "1010", "1011", "1001", "1000"}};
 
         int charIndex = 0;
+
+        System.out.println(letters);
 
         //z axle
         int limZ = (show3D.isSelected() && variables > 4) ? ((variables > 5) ? 4 : 2) : 0;
