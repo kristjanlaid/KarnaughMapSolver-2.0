@@ -1,15 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.canvas.*?>
-<?import javafx.geometry.*?>
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.CheckMenuItem?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.RadioMenuItem?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.SeparatorMenuItem?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.TextFlow?>
 
-<AnchorPane prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
+<AnchorPane prefHeight="1080.0" prefWidth="1920.0"
+    xmlns="http://javafx.com/javafx/19"
+    xmlns:fx="http://javafx.com/fxml/1" fx:controller="project.karnaughmapsolver.MainViewController">
     <children>
         <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <top>
@@ -50,16 +68,16 @@
                 <AnchorPane prefWidth="200.0" BorderPane.alignment="CENTER">
                     <children>
                         <Label text="Truth table" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                        <Button fx:id="inputButton" text="Inputs" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="3.0" prefHeight="3.0"/>
+                        <Button fx:id="inputButton" prefHeight="3.0" text="Inputs" AnchorPane.leftAnchor="140.0" AnchorPane.topAnchor="3.0" />
                         <TableView fx:id="truthTable" AnchorPane.bottomAnchor="35.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="30.0" />
-                  <HBox spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
-                     <children>
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetZeroClicked" text="'0'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetOneClicked" text="'1'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetDoNotCareClicked" text="'?'" />
-                        <Button mnemonicParsing="false" onMouseClicked="#allSetRandomizedClicked" text="'Rand'" />
-                     </children>
-                  </HBox>
+                        <HBox spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0">
+                            <children>
+                                <Button mnemonicParsing="false" onMouseClicked="#allSetZeroClicked" text="'0'" />
+                                <Button mnemonicParsing="false" onMouseClicked="#allSetOneClicked" text="'1'" />
+                                <Button mnemonicParsing="false" onMouseClicked="#allSetDoNotCareClicked" text="'?'" />
+                                <Button mnemonicParsing="false" onMouseClicked="#allSetRandomizedClicked" text="'Rand'" />
+                            </children>
+                        </HBox>
                     </children>
                 </AnchorPane>
             </left>
@@ -100,28 +118,29 @@
                                                 <Label text="Cell opacity" GridPane.rowIndex="2" />
                                             </children>
                                         </GridPane>
+                                        <Button onMouseClicked="#reset3DModel" layoutX="369.0" layoutY="45.0" mnemonicParsing="false" text="Reset" />
                                     </children>
                                 </AnchorPane>
                                 <AnchorPane prefHeight="365.0">
                                     <children>
                                         <Label text="Sum Of Product" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                                  <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="5.0" />
+                                        <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="5.0" />
                                         <AnchorPane fx:id="SOPParent" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
-                                                        <padding>
-                                                            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                        </padding>
-                                                        <children>
-                                                            <Canvas fx:id="canvasSOP" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                        </children>
+                                            <padding>
+                                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                            </padding>
+                                            <children>
+                                                <Canvas fx:id="canvasSOP" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children>
                                         </AnchorPane>
-                                                  <AnchorPane fx:id="POSParent" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
-                                                       <children>
-                                                            <Canvas fx:id="canvasPOS" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                                                       </children>
-                                                       <padding>
-                                                            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-                                                       </padding>
-                                                  </AnchorPane>
+                                        <AnchorPane fx:id="POSParent" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                            <children>
+                                                <Canvas fx:id="canvasPOS" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                            </children>
+                                            <padding>
+                                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                                            </padding>
+                                        </AnchorPane>
                                     </children>
                                 </AnchorPane>
                                 <AnchorPane minHeight="150.0" VBox.vgrow="ALWAYS">
@@ -131,9 +150,9 @@
                                         <ScrollPane fitToWidth="true" pannable="true" prefWidth="806.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="27.0">
                                             <content>
                                                 <TextFlow fx:id="solutionTextSOP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                                                   <padding>
-                                                      <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                                   </padding>
+                                                    <padding>
+                                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                                    </padding>
                                                 </TextFlow>
                                             </content>
                                         </ScrollPane>
@@ -148,10 +167,11 @@
                                         </ScrollPane>
                                     </children>
                                 </AnchorPane>
-                     </children>
-                  </VBox>
-                  <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="811.0" AnchorPane.topAnchor="90.0" />
-                    </children></AnchorPane>
+                            </children>
+                        </VBox>
+                        <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="811.0" AnchorPane.topAnchor="90.0" />
+                    </children>
+                </AnchorPane>
             </center>
             <bottom>
                 <AnchorPane BorderPane.alignment="CENTER" />

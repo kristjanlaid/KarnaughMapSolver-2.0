@@ -104,6 +104,14 @@ public class MainViewController implements Initializable {
         solve();
     }
 
+    @FXML
+    private void reset3DModel(){
+        if (show3D.isSelected()){
+            cubeModelBuilderSOP.resetRotation();
+            cubeModelBuilderPOS.resetRotation();
+        }
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initMenuItems();
@@ -496,8 +504,6 @@ public class MainViewController implements Initializable {
                                  "1010", "1011", "1001", "1000"}};
 
         int charIndex = 0;
-
-        System.out.println(letters);
 
         //z axle
         int limZ = (show3D.isSelected() && variables > 4) ? ((variables > 5) ? 4 : 2) : 0;
