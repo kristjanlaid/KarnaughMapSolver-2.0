@@ -124,18 +124,18 @@
                                 <AnchorPane prefHeight="365.0">
                                     <children>
                                         <Label text="Sum Of Product" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
-                                        <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="820.0" AnchorPane.topAnchor="5.0" />
-                                        <AnchorPane fx:id="SOPParent" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                        <Label layoutX="10.0" layoutY="10.0" text="Product Of Sum " AnchorPane.leftAnchor="610.0" AnchorPane.topAnchor="5.0" />
+                                        <AnchorPane fx:id="SOPParent" prefWidth="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="25.0">
                                             <padding>
                                                 <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                             </padding>
                                             <children>
-                                                <Canvas fx:id="canvasSOP" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <Canvas fx:id="canvasSOP" height="336.0" width="550.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                             </children>
                                         </AnchorPane>
-                                        <AnchorPane fx:id="POSParent" prefWidth="804.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+                                        <AnchorPane fx:id="POSParent" prefWidth="683.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
                                             <children>
-                                                <Canvas fx:id="canvasPOS" height="336.0" width="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                                <Canvas fx:id="canvasPOS" height="336.0" width="650.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                                             </children>
                                             <padding>
                                                 <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -147,7 +147,7 @@
                                     <children>
                                         <Label text="Solution" AnchorPane.leftAnchor="5.0" AnchorPane.topAnchor="5.0" />
                                         <Button mnemonicParsing="false" onMousePressed="#solveButtonClicked" text="Solve" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="0.0" />
-                                        <ScrollPane fitToWidth="true" pannable="true" prefWidth="806.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="27.0">
+                                        <ScrollPane fitToWidth="true" pannable="true" prefWidth="550.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="2.0" AnchorPane.topAnchor="27.0">
                                             <content>
                                                 <TextFlow fx:id="solutionTextSOP" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <padding>
@@ -156,7 +156,7 @@
                                                 </TextFlow>
                                             </content>
                                         </ScrollPane>
-                                        <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="10.0" pannable="true" prefWidth="900.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
+                                        <ScrollPane fitToWidth="true" layoutX="10.0" layoutY="10.0" pannable="true" prefWidth="683.0" AnchorPane.bottomAnchor="5.0" AnchorPane.rightAnchor="2.0" AnchorPane.topAnchor="27.0">
                                             <content>
                                                 <TextFlow fx:id="solutionTextPOS" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                     <padding>
@@ -169,7 +169,7 @@
                                 </AnchorPane>
                             </children>
                         </VBox>
-                        <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="811.0" AnchorPane.topAnchor="90.0" />
+                        <Separator orientation="VERTICAL" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="550.0" AnchorPane.topAnchor="90.0" />
                     </children>
                 </AnchorPane>
             </center>

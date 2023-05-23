@@ -312,6 +312,7 @@ public class MainViewController implements Initializable {
                     letters = "ABCDEFG";
                 } else {
                     variablesChoiceBox.setValue(string.length());
+                    letters = string;
                     variableChange();
                 }
 
@@ -336,6 +337,10 @@ public class MainViewController implements Initializable {
         int numberOfVariables = variablesChoiceBox.getValue();
         int numberOfRows = (int) Math.pow(2, numberOfVariables);
 
+        char[] letterArr = new char[letters.length()];
+
+        letters.getChars(0, letters.length(), letterArr, 0);
+
         truthTable.getItems().clear();
         truthTable.getColumns().clear();
 
@@ -349,7 +354,7 @@ public class MainViewController implements Initializable {
 
         // Add colums according to number of variables
         for (int i = 0; i < numberOfVariables; i++) {
-            TableColumn<ValueSet, String> column = new TableColumn<>(String.valueOf((char) ('A' + i)));
+            TableColumn<ValueSet, String> column = new TableColumn<>(String.valueOf((char) (letterArr[i])));
             column.setCellValueFactory(new PropertyValueFactory<>("x" + i));
             column.setPrefWidth(20);
             column.setSortable(false);
@@ -399,7 +404,7 @@ public class MainViewController implements Initializable {
             } else {
                 initValue = '?';
             }
-            ValueSet valueSet = new ValueSet(i, numberOfVariables, initValue, idx);
+            ValueSet valueSet = new ValueSet(i, numberOfVariables, initValue, idx, letters);
             truthTable.getItems().add(valueSet);
             idx++;
         }
@@ -576,6 +581,15 @@ public class MainViewController implements Initializable {
 
     private void solve() {
         kMap.findImplicants();
+
+        try {
+            char[] lets = new char[letters.length()];
+            letters.getChars(0, letters.length(), lets, 0);
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+
+
 
         solutionTextSOP.getChildren().clear();
         solutionTextPOS.getChildren().clear();

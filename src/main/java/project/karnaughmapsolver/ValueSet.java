@@ -14,11 +14,13 @@ public class ValueSet implements Comparable<ValueSet> {
     private boolean clicked = false;
     private String color;
     private int index;
+    private String letters;
 
-    public ValueSet(int number, int length, char f, int index) {
+    public ValueSet(int number, int length, char f, int index, String letters) {
         this.binary = Integer.toBinaryString(0b10000000 | number).substring(8 - length).toCharArray();
         this.f = f;
         this.index = index;
+        this.letters = letters;
     }
 
     public ValueSet(ValueSet valueSet) {
@@ -121,13 +123,16 @@ public class ValueSet implements Comparable<ValueSet> {
         StringBuilder sb = new StringBuilder();
         int gateCount = 0;
 
+        char[] letterArr = new char[letters.length()];
+        letters.getChars(0, letters.length(), letterArr, 0);
+
         for (int i = 0; i < binary.length; i++) {
             if (binary[i] == '0') {
                 sb.append('¬');
-                sb.append((char) ('A' + i));
+                sb.append((char) (letterArr[i]));
                 gateCount+=2;
             } else if (binary[i] == '1') {
-                sb.append((char) ('A' + i));
+                sb.append((char) (letterArr[i]));
                 gateCount++;
             }
         }
@@ -147,15 +152,18 @@ public class ValueSet implements Comparable<ValueSet> {
         StringBuilder sb = new StringBuilder();
         int gateCount = 0;
 
+        char[] letterArr = new char[letters.length()];
+        letters.getChars(0, letters.length(), letterArr, 0);
+
         sb.append("(");
         for (int i = 0; i < binary.length; i++) {
             if (binary[i] == '0') {
-                sb.append((char) ('A' + i));
+                sb.append((char) (letterArr[i]));
                 sb.append("+");
                 gateCount++;
             } else if (binary[i] == '1') {
                 sb.append('¬');
-                sb.append((char) ('A' + i));
+                sb.append((char) (letterArr[i]));
                 sb.append("+");
                 gateCount++;
             }
