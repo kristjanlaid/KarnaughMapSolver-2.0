@@ -119,12 +119,12 @@ public class ValueSet implements Comparable<ValueSet> {
         return Integer.parseInt(String.valueOf(binary), 2);
     }
 
-    public String getFormulaSOP() {
+    public String getFormulaSOP(String lettersString) {
         StringBuilder sb = new StringBuilder();
         int gateCount = 0;
 
-        char[] letterArr = new char[letters.length()];
-        letters.getChars(0, letters.length(), letterArr, 0);
+        char[] letterArr = new char[lettersString.length()];
+        lettersString.getChars(0, lettersString.length(), letterArr, 0);
 
         for (int i = 0; i < binary.length; i++) {
             if (binary[i] == '0') {
@@ -148,12 +148,12 @@ public class ValueSet implements Comparable<ValueSet> {
         return sb.toString();
     }
 
-    public String getFormulaPOS() {
+    public String getFormulaPOS(String lettersString) {
         StringBuilder sb = new StringBuilder();
         int gateCount = 0;
 
-        char[] letterArr = new char[letters.length()];
-        letters.getChars(0, letters.length(), letterArr, 0);
+        char[] letterArr = new char[lettersString.length()];
+        lettersString.getChars(0, lettersString.length(), letterArr, 0);
 
         sb.append("(");
         for (int i = 0; i < binary.length; i++) {
@@ -182,7 +182,7 @@ public class ValueSet implements Comparable<ValueSet> {
     }
 
     public String getSimplifiedSOPFormula() {
-        String formula = getFormulaSOP();
+        String formula = getFormulaSOP(letters);
 
         // Apply boolean algebra reduction to simplify the formula
         formula = applyBooleanAlgebraReduction(formula, null);
@@ -191,7 +191,7 @@ public class ValueSet implements Comparable<ValueSet> {
     }
 
     public String getSimplifiedPOSFormula() {
-        String formula = getFormulaPOS();
+        String formula = getFormulaPOS(letters);
 
         // Apply boolean algebra reduction to simplify the formula
         formula = applyBooleanAlgebraReduction(formula, null);
@@ -320,7 +320,7 @@ public class ValueSet implements Comparable<ValueSet> {
     }
 
     public String getSimplifiedPOSFormulaWithGates(String gateType) {
-        String formula = getFormulaPOS();
+        String formula = getFormulaPOS(letters);
 
         // Apply boolean algebra reduction to simplify the formula
         formula = applyBooleanAlgebraReduction(formula, gateType);
@@ -329,7 +329,7 @@ public class ValueSet implements Comparable<ValueSet> {
     }
 
     public String getSimplifiedSOPFormulaWithGates(String gateType) {
-        String formula = getFormulaSOP();
+        String formula = getFormulaSOP(letters);
 
         // Apply boolean algebra reduction to simplify the formula
         formula = applyBooleanAlgebraReduction(formula, gateType);

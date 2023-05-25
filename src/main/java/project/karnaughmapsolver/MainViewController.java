@@ -305,10 +305,7 @@ public class MainViewController implements Initializable {
             Optional<String> result = dialog.showAndWait();
 
             result.ifPresent(string -> {
-                if (letters.length() == variablesChoiceBox.getValue()) {
-                    letters = string;
-                    variableChange();
-                } else if (string.length() == 0) {
+                if (string.length() == 0) {
                     letters = "ABCDEFG";
                 } else {
                     variablesChoiceBox.setValue(string.length());
@@ -584,6 +581,7 @@ public class MainViewController implements Initializable {
 
         try {
             char[] lets = new char[letters.length()];
+
             letters.getChars(0, letters.length(), lets, 0);
         } catch (Exception e) {
             System.out.println(e);
@@ -600,7 +598,7 @@ public class MainViewController implements Initializable {
         int sumPOS = 0;
         for (int i = 0; i < kMap.getPrimeImplicantsSOP().size(); i++) {
             ValueSet valueSet = kMap.getPrimeImplicantsSOP().get(i);
-            String formula = valueSet.getFormulaSOP();
+            String formula = valueSet.getFormulaSOP(letters);
             Pattern p = Pattern.compile("\\d+");
             Matcher m = p.matcher(formula);
             while(m.find()) {
@@ -622,7 +620,7 @@ public class MainViewController implements Initializable {
         }
 
         for (ValueSet valueSet : kMap.getPrimeImplicantsPOS()) {
-            String formula = valueSet.getFormulaPOS();
+            String formula = valueSet.getFormulaPOS(letters);
             Pattern p = Pattern.compile("\\d+");
             Matcher m = p.matcher(formula);
             while(m.find()) {
@@ -649,7 +647,7 @@ public class MainViewController implements Initializable {
         sumPOS = 0;
         for (int i = 0; i < kMap.getMinimalCoverSOP().size(); i++) {
             ValueSet valueSet = kMap.getMinimalCoverSOP().get(i);
-            String formula = valueSet.getFormulaSOP();
+            String formula = valueSet.getFormulaSOP(letters);
             Pattern p = Pattern.compile("\\d+");
             Matcher m = p.matcher(formula);
             while(m.find()) {
@@ -666,7 +664,7 @@ public class MainViewController implements Initializable {
         }
 
         for (ValueSet valueSet : kMap.getMinimalCoverPOS()) {
-            String formula = valueSet.getFormulaPOS();
+            String formula = valueSet.getFormulaPOS(letters);
             Pattern p = Pattern.compile("\\d+");
             Matcher m = p.matcher(formula);
             while(m.find()) {
